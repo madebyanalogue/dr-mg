@@ -1,0 +1,43 @@
+:root {
+    --white: 255, 255, 255;
+    --cream: 249, 237, 229;
+    --grey: 217, 226, 225;
+    --black: 0, 0, 0;
+}
+
+.scheme, html, body {
+   background: var(--background-color);
+   color: var(--text-color);
+}
+.secondary {
+    background: var(--secondary-background-color);
+    color: var(--secondary-text-color);
+}
+svg > * {
+    fill:currentColor;
+}
+
+.light, body, html {
+    --background-color: rgba(var(--white), 1);
+    --text-color: rgba(var(--black), 1);
+    --secondary-background-color: rgba(var(--grey), .3);
+    --secondary-text-color: rgba(var(--black), 1);
+    --button-background-color: rgb(var(--black));
+    --button-text-color: rgba(var(--cream), 1);
+    --button-hover-background-color: rgba(var(--black), 1);
+    --button-hover-text-color: rgba(var(--grey), 1);
+    --button-border-color: rgba(var(--black), 1);
+    --button-hover-border-color: rgba(var(--black), 1);
+}
+.scheme.overlay {
+    --background-color: transparent;
+    --text-color: #ffffff;
+    --secondary-background-color: transparent;
+    --secondary-text-color: #ffffff;
+    --button-background-color: white;
+    --button-text-color: rgba(var(--black), 1);
+    --button-hover-background-color: rgba(var(--black), 1);
+    --button-hover-text-color: rgba(var(--grey), 1);
+    --button-border-color: white;
+    --button-hover-border-color: rgba(var(--grey), 1);
+}

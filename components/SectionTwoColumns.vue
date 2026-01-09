@@ -1,0 +1,165 @@
+<template>
+  <section 
+    v-if="hasContent"
+    ref="sectionRef"
+    :id="sectionId"
+    :class="[
+      'section-two-columns',
+      {
+        'section-padding-top': !section.noPaddingTop,
+        'section-padding-bottom': !section.noPaddingBottom,
+        'section-padding-top-mobile': !section.paddingTopMobile,
+        'section-padding-bottom-mobile': !section.paddingBottomMobile
+      }
+    ]"
+    :data-section-id="section._id"
+  >
+    <div class="wrapper">
+      <div class="grid grid-1 gap-2">
+        <div class="grid grid-1 grid-md-12 gap-4" style="align-items: center;">
+          <!-- First Column -->
+          <div 
+            :class="[
+              `col-span-${firstColumnWidth}-md`,
+              { 'hide-empty-mobile': !hasSlotContent(leftSlot) }
+            ]"
+          >
+            <!-- Left Slot Content -->
+            <div 
+              v-if="hasSlotContent(leftSlot)" 
+              data-fade-in 
+              :class="{ 'lazyload-image-container': leftSlot.type === 'image' && leftSlot.image }"
+            >
+              <NuxtImg
+                v-if="leftSlot.type === 'image' && leftSlot.image"
+                :src="leftSlot.image.asset.url"
+                :alt="leftSlot.image.alt || 'Left column image'"
+                style="width: 100%; height: auto;"
+                class="lazyload-image"
+              />
+              <div v-if="leftSlot.type === 'image' && leftSlot.image" class="lazyload-cover"></div>
+              <div 
+                v-else-if="leftSlot.type === 'text' && leftSlot.text && leftSlot.text.length > 0" 
+                class="text-content body"
+              >
+                <SanityBlocks :blocks="leftSlot.text" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Second Column (fills remaining) -->
+          <div 
+            :class="[
+              `col-span-${secondColumnWidth}-md`,
+              { 'hide-empty-mobile': !hasSlotContent(rightSlot) }
+            ]"
+          >
+            <!-- Right Slot Content -->
+            <div 
+              v-if="hasSlotContent(rightSlot)" 
+              data-fade-in 
+              :class="{ 'lazyload-image-container': rightSlot.type === 'image' && rightSlot.image }"
+            >
+              <NuxtImg
+                v-if="rightSlot.type === 'image' && rightSlot.image"
+                :src="rightSlot.image.asset.url"
+                :alt="rightSlot.image.alt || 'Right column image'"
+                style="width: 100%; height: auto;"
+                class="lazyload-image"
+              />
+              <div v-if="rightSlot.type === 'image' && rightSlot.image" class="lazyload-cover"></div>
+              <div 
+                v-else-if="rightSlot.type === 'text' && rightSlot.text && rightSlot.text.length > 0" 
+                class="text-content body"
+              >
+                <SanityBlocks :blocks="rightSlot.text" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</template>
+
+<script setup>
+import { computed, ref, onMounted, nextTick } from 'vue'
+import SanityBlocks from '~/components/SanityBlocks.vue'
+import { useSectionVisibility } from '~/composables/useSectionVisibility'
+import { useSectionId } from '~/composables/useSectionId'
+
+const props = defineProps({
+  section: {
+    type: Object,
+    required: true,
+    validator: (value) => {
+      return value && value._type === 'section' && value.sectionType === 'twoColumns'
+    }
+  }
+})
+
+const sectionRef = ref(null)
+const { generateSectionId } = useSectionId()
+
+// Generate section ID from title for anchor navigation
+const sectionId = computed(() => {
+  if (props.section?.title) {
+    return generateSectionId(props.section.title)
+  }
+  return null
+})
+
+// Use section visibility composable to trigger fade-in animations
+const { addSectionTrigger } = useSectionVisibility()
+
+onMounted(() => {
+  nextTick(() => {
+    if (sectionRef.value) {
+      addSectionTrigger(sectionRef.value)
+    }
+  })
+})
+
+const firstColumnWidth = computed(() => {
+  return props.section?.twoColumnsContent?.firstColumnWidth || '6'
+})
+
+const secondColumnWidth = computed(() => {
+  const first = parseInt(firstColumnWidth.value)
+  return (12 - first).toString()
+})
+
+const leftSlot = computed(() => {
+  return props.section?.twoColumnsContent?.leftSlot
+})
+
+const rightSlot = computed(() => {
+  return props.section?.twoColumnsContent?.rightSlot
+})
+
+// Check if slot has actual content
+const hasSlotContent = (slot) => {
+  if (!slot) return false
+  if (slot.type === 'image' && slot.image) return true
+  if (slot.type === 'text' && slot.text && slot.text.length > 0) return true
+  return false
+}
+
+const hasContent = computed(() => {
+  return hasSlotContent(leftSlot.value) || hasSlotContent(rightSlot.value)
+})
+</script>
+
+<style scoped>
+.text-content {
+  width: 100%;
+}
+
+/* Hide empty columns on screens smaller than 1000px */
+@media (max-width: 999px) {
+  .hide-empty-mobile {
+    display: none;
+  }
+}
+</style>
+

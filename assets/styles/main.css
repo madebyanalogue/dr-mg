@@ -1,0 +1,1095 @@
+@import './dev-backgrounds.css';
+
+body:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('/images/home.jpg') no-repeat center top;
+  background-size: 100%;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+}
+
+:root {
+  --logo-height: 35px;
+  --footer-logo-height: 21px;
+  --header-height:var(--header-bar-height);
+  --header-bar-height: 70px;
+  --header-nav-height: 43px;
+
+  --button-padding: calc(var(--h4) * .35) calc(var(--h4) * 1.5) calc(var(--h4) * .3);
+
+  --centered-text-max-width: 740px;
+
+  /* Global animation timings */
+  --fade-duration: 2000ms;
+  --fade-stagger: 300ms;
+  --fade-initial-delay: 150ms;
+
+  --gap: 25px;
+  --gap-md: 50px;
+  --pad: 25px;
+  --pad-md: 50px;
+
+  --marquee-text-color: var(--dark-grey);
+  --marquee-hover-color: var(--black);
+  --marquee-background: var(--yellow);
+}
+
+@media (min-width: 800px) {
+  :root {
+    --logo-height: 50px;
+    --header-bar-height: 140px;
+    --footer-logo-height: 115px;
+    --header-height: calc(var(--header-bar-height) + var(--header-nav-height));
+  }
+}
+/* Removed empty :root ruleset at 1000px */
+
+.logo-image svg {
+  width: auto;
+  height: var(--logo-height);
+  display: block;
+}
+
+
+.logo, .logotype-svg svg {
+  height: var(--logo-height);
+  width: auto;
+  display:block;
+}
+.footer-logo .logo-image svg {
+  height: var(--footer-logo-height);
+  width: auto;
+  display:block;
+}
+
+/* App shell that wraps header + page content for transitions */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Page transition - smooth fade out and fade in */
+.page-enter-active {
+  transition: opacity 1800ms ease-out;
+}
+.page-leave-active {
+  transition: opacity 1800ms ease-in;
+}
+.page-enter-from {
+  opacity: 0;
+}
+.page-enter-to {
+  opacity: 1;
+}
+
+/* Hide new page content until overlay is visible */
+body.page-transitioning .page-enter-active,
+body.page-transitioning .page-enter-from {
+  opacity: 0 !important; /* Keep new page hidden while overlay fades in */
+}
+.page-leave-from {
+  opacity: 1;
+}
+.page-leave-to {
+  opacity: 1; /* Keep old page visible - overlay covers it */
+}
+
+.page-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #FFF;
+  z-index: 9999; /* High z-index to be above all content, but header (z-index: 3) uses isolation: isolate so it stays above */
+  pointer-events: none; /* Allow clicks when hidden */
+  opacity: 0;
+  transition: opacity 600ms ease;
+  will-change: opacity;
+}
+
+/* When becoming visible - fast fade in */
+.page-overlay--visible {
+  opacity: 1;
+  pointer-events: auto; /* Block interactions when visible */
+  transition: opacity 600ms ease; /* Fast fade in */
+}
+
+/* When leaving visible state - slow fade out */
+.page-overlay:not(.page-overlay--visible) {
+  transition: opacity 600ms ease; /* Slow fade out */
+}
+
+/* Ensure footer is not affected by page transition opacity */
+.page-enter-active footer,
+.page-enter-from footer,
+.page-enter-to footer,
+.page-leave-active footer,
+.page-leave-from footer,
+.page-leave-to footer {
+  opacity: 1 !important;
+}
+
+
+
+.centered-text-max-width {
+  max-width: var(--centered-text-max-width);
+  margin: 0 auto;
+}
+
+
+section {
+  position: relative;
+  width: 100%;
+}
+
+.section-border-bottom:after,
+.section-border-top:before {
+  content: '';
+  position: absolute;
+  left: 30px;
+  width: calc(100% - 60px);
+  height: 1px;
+  background-color: currentColor;
+}
+.section-border-top:before {
+  top: 0%;
+}
+.section-border-bottom:after {
+  bottom: 0%;
+}
+
+
+
+
+
+.page-container {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Ensure page-container maintains height during transitions */
+.page-enter-active .page-container,
+.page-leave-active .page-container {
+  min-height: 100svh;
+}
+
+/* Footer fade transition */
+footer {
+  position: relative;
+  z-index: 2;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.page-transitioning footer {
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+/* Ensure footer is visible after transitions complete - use higher specificity */
+body:not(.page-transitioning) footer,
+body:not(.page-transitioning) .page-enter-active footer,
+body:not(.page-transitioning) .page-enter-to footer {
+  opacity: 1 !important;
+}
+
+/* Hide footer until preloader is ready to avoid flash at top on first load/refresh */
+body:not(.preloader-ready) footer {
+  opacity: 0;
+}
+
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  width: 100%;
+  pointer-events: none;
+  isolation: isolate;
+}
+header.menu-active {
+  pointer-events: all;
+}
+header a, header button {
+  pointer-events: auto;
+}
+
+.logo-image, .nav:not(.nav-open) .hamburger {
+  mix-blend-mode: difference;
+}
+
+/* When page transitions are disabled, freeze visual recalibration effects */
+body.no-page-transition,
+body.no-page-transition * {
+  transition: none !important;
+  animation: none !important;
+}
+
+.page-builder {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  overflow: hidden;
+}
+
+
+
+/* Button styles moved to typography.css */
+
+
+
+
+
+
+#__nuxt {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column; 
+}
+
+main {
+  flex: 1 0 auto;
+  min-height: 0px !important;
+  /* Optional: add padding or margin as needed */
+  padding-top: calc(var(--header-height));
+}
+
+
+
+.roundal {
+  animation: none; /* Disabled until preloader is ready */
+}
+
+body.preloader-ready .roundal {
+  animation: rotate 10s linear infinite;
+}
+
+
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.hero-text-content svg {
+  width:100%;
+  height: 100%;
+  object-fit: contain;
+  max-width: unset;
+}
+
+
+
+/* Button hover styles are now loaded directly in nuxt.config.ts */
+
+/* Prevent flash of content before preloader */
+body {
+  overflow: hidden;
+}
+
+/* Disable all animations and transitions until preloader is ready */
+body:not(.preloader-ready) * {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Exception: Allow page transitions to work during navigation */
+/* Keep old page visible - overlay will cover it */
+body.page-transitioning .page-leave-active,
+body.page-transitioning .app-shell.page-leave-active {
+  transition: opacity 0ms !important; /* Instant - don't fade out */
+  opacity: 1 !important; /* Keep visible */
+  animation: none !important;
+}
+
+body.page-transitioning .page-enter-active,
+body.page-transitioning .app-shell.page-enter-active {
+  transition: opacity 1800ms ease-out !important;
+  animation: none !important;
+}
+
+/* Exception: Allow overlay transitions to work - override global transition: none */
+/* Use higher specificity to ensure these rules win */
+body .page-overlay,
+body.page-transitioning .page-overlay {
+  transition: opacity 1800ms ease !important;
+  animation: none !important;
+}
+
+body .page-overlay--visible,
+body.page-transitioning .page-overlay--visible {
+  transition: opacity 1800ms ease !important; /* Fade in */
+  animation: none !important;
+}
+
+body .page-overlay:not(.page-overlay--visible),
+body.page-transitioning .page-overlay:not(.page-overlay--visible) {
+  transition: opacity 1800ms ease !important; /* Fade out */
+  animation: none !important;
+}
+
+/* Navigation animations work immediately */
+/* .navigation *,
+.hamburger-nav *,
+[data-navigation-status] * {
+  animation: unset !important;
+  transition: unset !important;
+} */
+
+/* Re-enable animations when preloader is ready */
+/* body.preloader-ready * {
+  animation: unset;
+  transition: unset;
+} */
+
+
+
+body.preloader-complete {
+  overflow: auto;
+}
+
+/* Section trigger styles for debugging */
+/* .section-trigger {
+  position: absolute !important;
+  top: 50% !important;
+  left: 0 !important;
+  width: 40px !important;
+  height: 2px !important;
+  background-color: red !important;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1000 !important;
+  pointer-events: none;
+}
+
+.section-trigger.visible {
+  opacity: 0 !important;
+} */
+
+
+/* Directional Button Hover Effects */
+
+/* Base button structure - only for elements with data-btn-hover */
+[data-btn-hover] {
+  border: 1px solid var(--color-text);
+  border-radius: 0;
+  text-decoration: none;
+  text-align: center;
+  overflow: hidden;
+  position: relative;
+  display: inline-block;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  border-radius: 50px;
+  padding: calc(var(--h6) * .6) calc(var(--h6) * 1.8);
+  font-size: var(--h6);
+  font-family: var(--mono);
+  letter-spacing: var(--mono-spacing);
+  white-space: nowrap; 
+  /* Create a new stacking context */
+  isolation: isolate;
+  cursor: pointer;
+}
+
+/* Button text */
+[data-btn-hover] .btn__text {
+  position: relative;
+  z-index: 2;
+  transition: color 0.7s cubic-bezier(0.625, 0.05, 0, 1);
+  /* Inherit button text styling */
+  color: var(--color-text);
+  font-size: var(--h6);
+  font-family: var(--mono);
+  letter-spacing: var(--mono-spacing);
+  text-transform: uppercase;
+}
+
+/* Button background */
+[data-btn-hover] .btn__bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  z-index: 1;
+}
+
+/* Hover circle */
+[data-btn-hover] .btn__circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0) rotate(0.001deg);
+  transition: transform 0.7s cubic-bezier(0.625, 0.05, 0, 1), background-color 0.4s cubic-bezier(0.625, 0.05, 0, 1);
+  z-index: 1;
+  pointer-events: none;
+  background-color: var(--color-text);
+}
+
+/* Hover state */
+[data-btn-hover]:hover .btn__circle {
+  transform: translate(-50%, -50%) scale(1) rotate(0.001deg);
+  /* JavaScript controls the size dynamically */
+}
+
+[data-btn-hover]:hover .btn__text {
+  color: var(--white) !important;
+}
+
+/* Theme variations can be added later if needed */
+
+/* Additional theme variations can be added here if needed */
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+  [data-btn-hover] {
+    min-width: 200px;
+  }
+}
+
+/* Focus states for accessibility */
+[data-btn-hover]:focus {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+/* Disabled state */
+[data-btn-hover]:disabled,
+[data-btn-hover][disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+[data-btn-hover]:disabled:hover .btn__circle,
+[data-btn-hover][disabled]:hover .btn__circle {
+  transform: translate(-50%, -50%) scale(0) rotate(0.001deg);
+}
+
+
+
+.navigation {
+	z-index: 1005;
+	pointer-events: auto; /* allow clicks to bubble */
+	position: fixed;
+	inset: 0;
+	pointer-events: none;
+	    height: 100vh;
+}
+
+.navigation__dark-bg {
+	transition: all 0.7s cubic-bezier(0.5, 0.5, 0, 1);
+	opacity: 0;
+	pointer-events: auto;
+	visibility: hidden;
+	background-color: #000;
+	position: absolute;
+	inset: 0;
+}
+
+[data-navigation-status="active"] .navigation__dark-bg {
+	opacity: 0.15;
+	visibility: visible;
+}
+
+.hamburger-nav {
+	border-radius: 1.5em;
+	position: absolute;
+	top: var(--pad-1);
+	right: var(--pad-2);
+	pointer-events: auto; /* ensure clicks register even though parent has pointer-events:none */
+	z-index: 1004; /* above dark bg and header */
+}
+
+.hamburger-nav__bg {
+	transition: all 0.7s cubic-bezier(0.5, 0.5, 0, 1);
+	background-color: rgba(230,230,230,0.8);
+  backdrop-filter: blur(30px);
+	border-radius: 1.75em;
+	width: 3.5em;
+	height: 3.5em;
+	position: absolute;
+	top: 0;
+	right: 0;
+	pointer-events: none; /* do not block clicks on the toggle */
+}
+
+[data-navigation-status="active"] .hamburger-nav__bg {
+	width: 100%;
+	height: 100%;
+}
+
+.hamburger-nav__group {
+	transition: all 0.5s cubic-bezier(0.5, 0.5, 0, 1), transform 0.7s cubic-bezier(0.5, 0.5, 0, 1);
+	grid-column-gap: 1em;
+	grid-row-gap: 1em;
+	pointer-events: auto;
+	transform-origin: 100% 0;
+	flex-flow: column;
+	padding: 2.25em 2.5em 2em 2em;
+	display: flex;
+	position: relative;
+	transform: scale(0.15) rotate(0.001deg);
+	opacity: 0;
+	visibility: hidden;
+}
+
+[data-navigation-status="active"] .hamburger-nav__group {
+	transform: scale(1) rotate(0.001deg);
+	opacity: 1;
+	visibility: visible;
+}
+
+.hamburger-nav__menu-p {
+	opacity: .5;
+	letter-spacing: .1em;
+	text-transform: uppercase;
+	margin-bottom: 0;
+	font-family: var(--mono);
+	font-size: 1em;
+	font-weight: 400;
+}
+
+.hamburger-nav__ul {
+	grid-column-gap: .375em;
+	grid-row-gap: .375em;
+	flex-flow: column;
+	margin-top: 0;
+	margin-bottom: 0;
+	padding: 0;
+	display: flex;
+	position: relative;
+}
+
+.hamburger-nav__li {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.hamburger-nav__a {
+	color: #131313;
+	justify-content: space-between;
+	align-items: center;
+	text-decoration: none;
+	display: flex;
+	position: relative;
+}
+
+.hamburger-nav__a[aria-current] .hamburger-nav__p {
+	opacity: 0.33;
+}
+
+.hamburger-nav__p {
+	white-space: nowrap;
+	margin-bottom: 0;
+	padding-right: 1.25em;
+	font-size: 2em;
+}
+
+.hamburger-nav__dot {
+	transition: all 0.7s cubic-bezier(0.5, 0.5, 0, 1);
+	background-color: currentColor;
+	border-radius: 50%;
+	flex-shrink: 0;
+	width: .5em;
+	height: .5em;
+	transform: scale(0) rotate(0.001deg);
+	opacity: 0.5;
+}
+
+.hamburger-nav__a[aria-current] .hamburger-nav__dot {
+	transform: scale(1) rotate(0.001deg);
+	opacity: 1;
+}
+
+.hamburger-nav:has(.hamburger-nav__a:hover) .hamburger-nav__dot {
+	transform: scale(0) rotate(0.001deg);
+}
+
+.hamburger-nav .hamburger-nav__a:hover .hamburger-nav__dot {
+	transform: scale(1) rotate(0.001deg);
+	opacity: 0.25;
+}
+
+.hamburger-nav__toggle {
+	transition: transform 0.7s cubic-bezier(0.5, 0.5, 0, 1);
+	pointer-events: auto;
+	cursor: pointer;
+	border-radius: 50%;
+	justify-content: center;
+	align-items: center;
+	width: 3.5em;
+	height: 3.5em;
+	display: flex;
+	position: absolute;
+	top: 0;
+	right: 0;
+	transform: translate(0em, 0em) rotate(0.001deg);
+	z-index: 1001; /* above header icons */
+}
+
+[data-navigation-status="active"] .hamburger-nav__toggle {
+	transform: translate(-1em, 1em) rotate(0.001deg);
+}
+
+.hamburger-nav__toggle-bar {
+	transition: transform 0.7s cubic-bezier(0.5, 0.5, 0, 1);
+	background-color: currentColor;
+	width: 40%;
+	height: .125em;
+	position: absolute;
+	transform: translateY(-0.15em) rotate(0.001deg);
+}
+
+.hamburger-nav__toggle:hover .hamburger-nav__toggle-bar {
+	transform: translateY(0.15em) rotate(0.001deg);
+}
+
+[data-navigation-status="active"] .hamburger-nav__toggle .hamburger-nav__toggle-bar {
+	transform: translateY(0em) rotate(45deg);
+}
+
+.hamburger-nav__toggle .hamburger-nav__toggle-bar:nth-child(2) {
+	transition: transform 0.7s cubic-bezier(0.5, 0.5, 0, 1);
+	transform: translateY(0.15em) rotate(0.001deg);
+}
+
+.hamburger-nav__toggle:hover .hamburger-nav__toggle-bar:nth-child(2) {
+	transform: translateY(-0.15em) rotate(0.001deg);
+}
+
+[data-navigation-status="active"] .hamburger-nav__toggle .hamburger-nav__toggle-bar:nth-child(2) {
+	transform: translateY(0em) rotate(-45deg);
+}
+
+
+.image-overlay-container {
+  width:100%;
+}
+
+/* Subfooter reveal defaults */
+#subfooter {
+  transform-origin: bottom;
+  transform: scaleY(0);
+}
+#subfooter .wrapper {
+  opacity: 0;
+}
+
+/* Page transition handling */
+.page-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main > div, .page-container main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.page-builder {
+  flex: 1;
+}
+
+/* Page title fade transition effect */
+.page-title {
+  font-size: 16px;
+  text-transform: uppercase;
+}
+
+/* Global GSAP slider base styles (used across components) */
+.gsap-slider { display: flex; flex-flow: column; align-items: center; width: 100%; position: relative; overflow: hidden; }
+.gsap-slider__collection { width: 100%; z-index:0; }
+.gsap-slider__list { display: flex; will-change: transform; -webkit-user-select: none; user-select: none; touch-action: pan-x; backface-visibility: hidden; }
+.gsap-slider__item { width: calc(((100% - 1px) - (var(--slider-spv, 1.15) - 1) * var(--slider-gap, 0.01em)) / var(--slider-spv, 1.15)); margin-right: var(--slider-gap, 0.01em); flex: none; }
+.carousel-card { position: relative; width: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.before__125 { padding-top: 133%; }
+.carousel-media { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.carousel-image, .carousel-video { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
+[data-gsap-slider-item]:last-child { margin-right: 0; }
+.gsap-slider__controls { position: absolute; top: 50%; transform: translateY(-50%); width: 100%; padding: 0 var(--pad-2); display: flex; justify-content: space-between; pointer-events: none; }
+.gsap-slider__control { opacity: 0; pointer-events: auto; color: var(--yellow); background: transparent; border: 1px solid var(--yellow); border-radius: 50%; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; transition: opacity 0.3s ease; }
+.gsap-slider__control[data-gsap-slider-control-status="active"] { opacity: 1; }
+[data-gsap-slider-status="not-active"] [data-gsap-slider-controls] { display: none; }
+
+/* Generic fade-in utility controlled by data attribute */
+[data-fade-in] { opacity: 0; }
+[data-fade-in].is-visible { opacity: 1; }
+
+/* Override inline transition styles for fade-in elements */
+[data-fade-in] {
+  transition: opacity var(--fade-duration) ease !important;
+  opacity: 0;
+}
+
+[data-fade-in].is-visible {
+  opacity: 1;
+}
+
+
+.gsap-slider__controls {
+  justify-content: between;
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  top:50%;
+  transform: translateY(-50%);
+  width: 100%;
+  padding: 0 var(--pad-2);
+  position: absolute;
+  pointer-events: none;
+}
+
+
+.gsap-slider__control {
+  opacity: 0;
+  color: var(--yellow);
+  background-color: transparent;
+  border: 1px solid var(--yellow);
+  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease;
+}
+@media (min-width: 1000px) {
+  .gsap-slider__control {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+*[data-gsap-slider-control="next"] {
+  transform: rotate(90deg);
+}
+
+*[data-gsap-slider-control="prev"] {
+  transform: rotate(-90deg);
+}
+
+[data-gsap-slider-status="not-active"] [data-gsap-slider-controls] {
+  display: none;
+}
+
+[data-gsap-slider-control-status="not-active"] { 
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Customization */
+
+.gsap-slider__control {
+  transition: opacity 0.3s ease;
+}
+
+.demo-card {
+  transition: all 0.3s ease;
+}
+
+[data-gsap-slider-item-status="not-active"] .demo-card {
+  background-color: #131313;
+}
+
+.demo-card__tag {
+  transition: all 0.3s ease;
+}
+
+[data-gsap-slider-item-status="not-active"] .demo-card__tag {
+  opacity: 0;
+}
+
+
+
+.section-service + .section-service .service-content-container  {
+  padding-top:0px;
+}
+
+
+.underline-links a, .underline-link {
+  position: relative;
+  display: inline-block;
+  text-decoration: none !important;
+}
+.underline-links a:after, .underline-link:after {
+  content: '';
+  position: absolute;
+  bottom: 1px;
+  left: 0;
+  width: 0%;
+  height: 1px;
+  background-color: var(--color-text);
+  transition: width 0.3s ease;
+}
+.underline-links a:hover:after, .underline-link:hover:after {
+  width: 100%;
+}
+.underline-links.reverse a:after, .underline-link.reverse:after {
+  width: 100%;
+  transform-origin: right;
+}
+.underline-links.reverse a:hover:after, .underline-link.reverse:hover:after {
+  width: 0%;
+}
+
+
+
+
+
+
+.image-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 6 / 5;
+  overflow: hidden;
+}
+.image-wrapper * {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
+/* Generic carousel styles (used by SectionCarousel) */
+.carousel {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+}
+
+.carousel__track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+.carousel__track:active {
+  cursor: grabbing;
+}
+
+.carousel__slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.carousel__image-wrapper {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  flex: 1;
+}
+
+.carousel__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+
+
+
+
+
+
+
+.carousel__btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.2s;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(var(--grey), 1);
+}
+
+.carousel__btn:hover {
+  background: rgba(var(--black), 1);
+  color: rgba(var(--light-green), 1);
+}
+
+.carousel__btn--prev {
+  left: 0px;
+}
+
+.carousel__btn--next {
+  right: 0px;
+}
+
+.carousel__dots {
+  position: absolute;
+  bottom: var(--pad-2);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 15px;
+  z-index: 10;
+}
+
+.carousel__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid white;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0;
+}
+
+.carousel__dot:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.carousel__dot--active {
+  background: white;
+}
+
+
+.page-link .image-wrapper img,
+.garden-link .image-wrapper img,
+.event-link .image-wrapper img {
+  transition: transform 0.6s ease;
+  transform-origin: center;
+}
+.page-link .image-wrapper:hover img,
+.garden-link .image-wrapper:hover img,
+.event-link .image-wrapper:hover img {
+  transform: scale(1.05);
+}
+
+/* ============================================
+   SHARED MENU STYLES
+   Used by both MobileMenu and Footer
+   ============================================ */
+
+.menu-list {
+  flex-direction: column;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+@media (min-width: 1000px) {
+  .menu-list {
+    flex-direction: row;
+    width: auto;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  
+  /* Override for header menu to align right */
+  .menu-inner > .menu-list {
+    justify-content: flex-end;
+  }
+}
+
+.menu-list-item {
+  position: relative;
+}
+
+.menu-link {
+  color: rgb(var(--black));
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--button-padding);
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  transition: opacity 0s ease, background-color 0.9s ease, filter 0s ease;
+  position: relative;
+  background-color: transparent;
+}
+
+/* .nav[data-navigation-status="active"] .menu-link {
+  opacity: 1;
+  transition: opacity 0.4s ease, background-color 0.9s ease, filter 0s ease;
+} */
+
+@media (min-width: 1000px) {
+  .menu-link {
+    transition: opacity 0.1s ease, background-color 0.9s ease, filter 0s ease 1s;
+  }
+}
+
+.menu-link:hover {
+  background-color: rgba(var(--black), 0.05);
+}
+
+/* .menu-link--current {
+  background-color: transparent;
+  color: rgb(var(--black));
+  border: 1px solid rgb(var(--black));
+} */
+
+.menu-link-text {
+  margin: 0;
+  position: relative;
+  font-size: var(--h4);
+  text-transform: uppercase;
+}
+
+
+
+
+/* IMAGE LAZY LOAD */
+
+.lazyload-image-container {
+  position: relative;
+}
+
+.lazyload-image-container.is-visible .lazyload-cover {
+  background-color: #000;
+}
+.lazyload-cover {
+  content: "";
+  background-color: #777;
+  position: absolute;
+  inset: 0;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  opacity: 1;
+  mix-blend-mode: lighten;
+  transition: opacity 1s, background-color 1.25s ease 0.2s;
+}
