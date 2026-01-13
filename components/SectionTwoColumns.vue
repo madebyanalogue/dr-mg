@@ -34,19 +34,24 @@
                 v-if="leftSlot.type === 'image' && leftSlot.image"
                 :class="[
                   'mobile-image-wrapper',
-                  'lazyload-image-container',
-                  `mobile-image-width-${leftSlot.mobileWidth || '12'}`,
-                  `mobile-image-align-${leftSlot.alignment || 'left'}`,
-                  `image-align-${leftSlot.alignment || 'left'}`
+                  `mobile-image-align-${leftSlot.alignment || 'left'}`
                 ]"
               >
-                <NuxtImg
-                  :src="leftSlot.image.asset.url"
-                  :alt="leftSlot.imageAlt || 'Left column image'"
-                  style="width: 100%; height: auto;"
-                  class="lazyload-image"
-                />
-                <div class="lazyload-cover"></div>
+                <div 
+                  :class="[
+                    'lazyload-image-container',
+                    `mobile-image-width-${leftSlot.mobileWidth || '12'}`,
+                    `image-align-${leftSlot.alignment || 'left'}`
+                  ]"
+                >
+                  <NuxtImg
+                    :src="leftSlot.image.asset.url"
+                    :alt="leftSlot.imageAlt || 'Left column image'"
+                    style="width: 100%; height: auto;"
+                    class="lazyload-image"
+                  />
+                  <div class="lazyload-cover"></div>
+                </div>
               </div>
               <div 
                 v-else-if="leftSlot.type === 'text' && leftSlot.text && leftSlot.text.length > 0" 
@@ -74,19 +79,24 @@
                 v-if="rightSlot.type === 'image' && rightSlot.image"
                 :class="[
                   'mobile-image-wrapper',
-                  'lazyload-image-container',
-                  `mobile-image-width-${rightSlot.mobileWidth || '12'}`,
-                  `mobile-image-align-${rightSlot.alignment || 'left'}`,
-                  `image-align-${rightSlot.alignment || 'left'}`
+                  `mobile-image-align-${rightSlot.alignment || 'left'}`
                 ]"
               >
-                <NuxtImg
-                  :src="rightSlot.image.asset.url"
-                  :alt="rightSlot.imageAlt || 'Right column image'"
-                  style="width: 100%; height: auto;"
-                  class="lazyload-image"
-                />
-                <div class="lazyload-cover"></div>
+                <div 
+                  :class="[
+                    'lazyload-image-container',
+                    `mobile-image-width-${rightSlot.mobileWidth || '12'}`,
+                    `image-align-${rightSlot.alignment || 'left'}`
+                  ]"
+                >
+                  <NuxtImg
+                    :src="rightSlot.image.asset.url"
+                    :alt="rightSlot.imageAlt || 'Right column image'"
+                    style="width: 100%; height: auto;"
+                    class="lazyload-image"
+                  />
+                  <div class="lazyload-cover"></div>
+                </div>
               </div>
               <div 
                 v-else-if="rightSlot.type === 'text' && rightSlot.text && rightSlot.text.length > 0" 
