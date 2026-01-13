@@ -384,7 +384,6 @@ onUnmounted(() => {
   position: relative;
   width: 100%;
   height: 100vh;
-  min-height: 100vh;
   overflow: hidden;
   z-index: 1;
   margin-top: 0;
@@ -394,7 +393,11 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
 }
-
+@media all and (max-width: 800px) {
+  .page-hero {
+    max-height: 600px;
+  }
+}
 .page-hero-image-wrapper {
   position: absolute;
   top: -20%;

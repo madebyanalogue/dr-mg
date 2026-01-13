@@ -804,9 +804,11 @@ export default defineEventHandler(async (event) => {
                     metadata {
                       dimensions
                     }
-                  },
-                  alt
+                  }
                 },
+                imageAlt,
+                mobileWidth,
+                alignment,
                 text
               },
               rightSlot {
@@ -818,9 +820,11 @@ export default defineEventHandler(async (event) => {
                     metadata {
                       dimensions
                     }
-                  },
-                  alt
+                  }
                 },
+                imageAlt,
+                mobileWidth,
+                alignment,
                 text
               }
             },

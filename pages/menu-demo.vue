@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import PushOverlayMenu from '~/components/PushOverlayMenu.vue'
+import PushOverlayMenu from '~/components/unused/PushOverlayMenu.vue'
 
 definePageMeta({
   pageTitle: 'Menu Demo'

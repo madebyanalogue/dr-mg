@@ -56,7 +56,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import SanityBlocks from '~/components/SanityBlocks.vue'
-import SectionMarquee from '~/components/SectionMarquee.vue'
+import SectionMarquee from '~/components/unused/SectionMarquee.vue'
 
 // Define props based on the Sanity schema
 const props = defineProps({

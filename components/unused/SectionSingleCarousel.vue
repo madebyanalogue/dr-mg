@@ -121,7 +121,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import SectionMarquee from '~/components/SectionMarquee.vue'
+import SectionMarquee from '~/components/unused/SectionMarquee.vue'
 
 const props = defineProps({
   section: {

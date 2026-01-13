@@ -1034,7 +1034,7 @@ main > div, .page-container main {
   padding: var(--button-padding);
   border-radius: 9999px;
   border: 1px solid transparent;
-  transition: opacity 0s ease, background-color 0.9s ease, filter 0s ease;
+  transition: opacity 0.4s ease, background-color 0.9s ease, filter 0s ease;
   position: relative;
   background-color: transparent;
 }
@@ -1054,11 +1054,11 @@ main > div, .page-container main {
   background-color: rgba(var(--black), 0.05);
 }
 
-/* .menu-link--current {
+.menu-link--current {
   background-color: transparent;
   color: rgb(var(--black));
   border: 1px solid rgb(var(--black));
-} */
+}
 
 .menu-link-text {
   margin: 0;
@@ -1072,7 +1072,7 @@ main > div, .page-container main {
 
 /* IMAGE LAZY LOAD */
 
-.lazyload-image-container {
+/* .lazyload-image-container {
   position: relative;
 }
 
@@ -1092,4 +1092,4 @@ main > div, .page-container main {
   opacity: 1;
   mix-blend-mode: lighten;
   transition: opacity 1s, background-color 1.25s ease 0.2s;
-}
+} */

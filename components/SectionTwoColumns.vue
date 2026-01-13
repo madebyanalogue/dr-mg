@@ -27,17 +27,27 @@
             <!-- Left Slot Content -->
             <div 
               v-if="hasSlotContent(leftSlot)" 
-              data-fade-in 
-              :class="{ 'lazyload-image-container': leftSlot.type === 'image' && leftSlot.image }"
+              data-fade-in
             >
-              <NuxtImg
+              <!-- Image with mobile flexbox wrapper -->
+              <div 
                 v-if="leftSlot.type === 'image' && leftSlot.image"
-                :src="leftSlot.image.asset.url"
-                :alt="leftSlot.image.alt || 'Left column image'"
-                style="width: 100%; height: auto;"
-                class="lazyload-image"
-              />
-              <div v-if="leftSlot.type === 'image' && leftSlot.image" class="lazyload-cover"></div>
+                :class="[
+                  'mobile-image-wrapper',
+                  'lazyload-image-container',
+                  `mobile-image-width-${leftSlot.mobileWidth || '12'}`,
+                  `mobile-image-align-${leftSlot.alignment || 'left'}`,
+                  `image-align-${leftSlot.alignment || 'left'}`
+                ]"
+              >
+                <NuxtImg
+                  :src="leftSlot.image.asset.url"
+                  :alt="leftSlot.imageAlt || 'Left column image'"
+                  style="width: 100%; height: auto;"
+                  class="lazyload-image"
+                />
+                <div class="lazyload-cover"></div>
+              </div>
               <div 
                 v-else-if="leftSlot.type === 'text' && leftSlot.text && leftSlot.text.length > 0" 
                 class="text-content body"
@@ -57,17 +67,27 @@
             <!-- Right Slot Content -->
             <div 
               v-if="hasSlotContent(rightSlot)" 
-              data-fade-in 
-              :class="{ 'lazyload-image-container': rightSlot.type === 'image' && rightSlot.image }"
+              data-fade-in
             >
-              <NuxtImg
+              <!-- Image with mobile flexbox wrapper -->
+              <div 
                 v-if="rightSlot.type === 'image' && rightSlot.image"
-                :src="rightSlot.image.asset.url"
-                :alt="rightSlot.image.alt || 'Right column image'"
-                style="width: 100%; height: auto;"
-                class="lazyload-image"
-              />
-              <div v-if="rightSlot.type === 'image' && rightSlot.image" class="lazyload-cover"></div>
+                :class="[
+                  'mobile-image-wrapper',
+                  'lazyload-image-container',
+                  `mobile-image-width-${rightSlot.mobileWidth || '12'}`,
+                  `mobile-image-align-${rightSlot.alignment || 'left'}`,
+                  `image-align-${rightSlot.alignment || 'left'}`
+                ]"
+              >
+                <NuxtImg
+                  :src="rightSlot.image.asset.url"
+                  :alt="rightSlot.imageAlt || 'Right column image'"
+                  style="width: 100%; height: auto;"
+                  class="lazyload-image"
+                />
+                <div class="lazyload-cover"></div>
+              </div>
               <div 
                 v-else-if="rightSlot.type === 'text' && rightSlot.text && rightSlot.text.length > 0" 
                 class="text-content body"
@@ -137,6 +157,7 @@ const rightSlot = computed(() => {
   return props.section?.twoColumnsContent?.rightSlot
 })
 
+
 // Check if slot has actual content
 const hasSlotContent = (slot) => {
   if (!slot) return false
@@ -159,6 +180,81 @@ const hasContent = computed(() => {
 @media (max-width: 999px) {
   .hide-empty-mobile {
     display: none;
+  }
+
+  /* Mobile image wrapper - flexbox container */
+  .mobile-image-wrapper {
+    display: flex;
+    width: 100%;
+  }
+
+  /* Mobile image width classes (6-12 columns) */
+  .mobile-image-width-6 {
+    max-width: calc((100% / 12) * 6);
+  }
+
+  .mobile-image-width-7 {
+    max-width: calc((100% / 12) * 7);
+  }
+
+  .mobile-image-width-8 {
+    max-width: calc((100% / 12) * 8);
+  }
+
+  .mobile-image-width-9 {
+    max-width: calc((100% / 12) * 9);
+  }
+
+  .mobile-image-width-10 {
+    max-width: calc((100% / 12) * 10);
+  }
+
+  .mobile-image-width-11 {
+    max-width: calc((100% / 12) * 11);
+  }
+
+  .mobile-image-width-12 {
+    max-width: 100%;
+  }
+
+  /* Mobile image alignment */
+  .mobile-image-align-left {
+    justify-content: flex-start;
+  }
+
+  .mobile-image-align-center {
+    justify-content: center;
+  }
+
+  .mobile-image-align-right {
+    justify-content: flex-end;
+  }
+}
+
+/* Image alignment classes */
+.image-align-left {
+  text-align: left;
+}
+
+.image-align-center {
+  text-align: center;
+}
+
+.image-align-right {
+  text-align: right;
+}
+
+.image-align-left .lazyload-image,
+.image-align-center .lazyload-image,
+.image-align-right .lazyload-image {
+  display: inline-block;
+}
+
+/* On desktop, remove flexbox wrapper constraints */
+@media (min-width: 1000px) {
+  .mobile-image-wrapper {
+    display: block;
+    max-width: 100%;
   }
 }
 </style>
