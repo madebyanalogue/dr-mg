@@ -14,7 +14,7 @@
   ></div>
 
   <!-- Header - persistent outside page transitions so menu doesn't get affected by DOM restructuring -->
-  <Header v-if="preloaderReady" :page-data="page" />
+  <Header v-if="preloaderReady && !hideHeaderForTestImage" :page-data="page" />
 
   <!-- Page transitions (wrap page content only, header is outside) -->
   <template v-if="!disablePageTransition">
@@ -99,7 +99,7 @@ import { useSiteSettings } from '~/composables/useSiteSettings'
 const { isDark, page, pending: pagePending } = usePageSettings();
 const route = useRoute();
 const router = useRouter();
-const { disablePreloader, disablePageTransition, defaultHeroVideo } = useSiteSettings()
+const { disablePreloader, disablePageTransition, defaultHeroVideo, defaultHeroImage } = useSiteSettings()
 
 
 // Initialize scroll trigger system
@@ -109,6 +109,32 @@ const { enableScrollAnimations } = useScrollTrigger();
 const preloaderReady = ref(false)
 const isPageTransitioning = ref(false)
 const showPageOverlay = ref(false)
+
+// Hide header when a Test Image section explicitly requests it
+const hideHeaderForTestImage = computed(() => {
+  const sections = page.value?.sections
+  if (!Array.isArray(sections)) return false
+
+  return sections.some(section =>
+    section &&
+    section._type === 'section' &&
+    section.sectionType === 'testImage' &&
+    section.testImageContent &&
+    section.testImageContent.hideHeader === true
+  )
+})
+
+// Detect if current page includes a Test Image section
+const hasTestImageSection = computed(() => {
+  const sections = page.value?.sections
+  if (!Array.isArray(sections)) return false
+
+  return sections.some(section =>
+    section &&
+    section._type === 'section' &&
+    section.sectionType === 'testImage'
+  )
+})
 
 
 // Debug logging for video
@@ -191,9 +217,21 @@ router.afterEach((to) => {
 
 
 
-// Use header height padding - hero is now outside main so doesn't affect padding
+// Check if page has a hero (video or image)
+const hasPageHero = computed(() => {
+  const pageData = page.value
+  if (!pageData) return false
+  
+  const hasHeroVideo = pageData.heroVideo?.asset?.url
+  const hasHeroImage = pageData.heroImage?.asset?.url
+  const hasDefaultHeroVideo = defaultHeroVideo.value?.asset?.url
+  const hasDefaultHeroImage = defaultHeroImage.value?.asset?.url
+  
+  return !!(hasHeroVideo || hasHeroImage || hasDefaultHeroVideo || hasDefaultHeroImage)
+})
+
+// Use header height padding (keep global behavior simple: no extra padding from here)
 const mainPaddingVar = computed(() => {
-  //return 'var(--header-height)'
   return '0px'
 });
 

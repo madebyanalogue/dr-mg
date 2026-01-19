@@ -842,6 +842,19 @@ export default defineEventHandler(async (event) => {
               blocks[] {
                 text
               }
+            },
+            testImageContent {
+              image {
+                asset-> {
+                  _id,
+                  url,
+                  metadata {
+                    dimensions
+                  }
+                },
+                alt
+              },
+              hideHeader
             }
           }
         }`

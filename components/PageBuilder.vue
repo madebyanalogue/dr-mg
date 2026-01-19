@@ -24,6 +24,12 @@
         :section="section"
       />
 
+      <!-- Test Image Section -->
+      <SectionTestImage
+        v-else-if="section._type === 'section' && section.sectionType === 'testImage'"
+        :section="section"
+      />
+
       <!-- <SectionImage
         v-else-if="section._type === 'section' && section.sectionType === 'image'"
         :section="section"
@@ -249,6 +255,7 @@ import SectionBasicPage from '~/components/SectionBasicPage.vue'
 import SectionTitleAndText from '~/components/SectionTitleAndText.vue'
 import SectionTwoColumns from '~/components/SectionTwoColumns.vue'
 import SectionBlocks from '~/components/SectionBlocks.vue'
+import SectionTestImage from '~/components/SectionTestImage.vue'
 
 const props = defineProps({
   sections: {
