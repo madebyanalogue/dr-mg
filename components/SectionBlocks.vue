@@ -186,7 +186,7 @@ onMounted(() => {
 
 @media (max-width: 1000px) { 
 .blocks-container {
-  width: clamp(320px, 60%, 60%);
+  width: 63%;
 }
 }
 
