@@ -264,11 +264,20 @@ watch(isHeaderVisible, (newValue) => {
   if (headerRef.value && headerAnimated.value) {
     if (newValue) {
       // Animate header in
+      let duration = 0.4
+
+      // If this visibility change was triggered as part of a page transition,
+      // apply instantly (no visible slide-down animation)
+      if (typeof document !== 'undefined' && document.body.dataset.headerInstant === '1') {
+        duration = 0
+        delete document.body.dataset.headerInstant
+      }
+
       gsap.to(headerRef.value, {
         y: '0%',
         opacity: 1,
-        duration: 0.4,
-        ease: 'power2.out'
+        duration,
+        ease: duration > 0 ? 'power2.out' : 'none'
       })
     } else {
       // Animate header out

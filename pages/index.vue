@@ -25,8 +25,8 @@
         :default-hero-image="defaultHeroImage"
       />
       
-      <template v-if="pageData?.sections?.length">
-        <PageBuilder :sections="pageData.sections" :page-data="pageData" />
+    <template v-if="pageData?.sections?.length">
+      <PageBuilder :sections="pageData.sections" :page-data="pageData" />
       </template>
     </template>
   </div>

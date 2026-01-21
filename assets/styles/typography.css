@@ -108,7 +108,7 @@ body         { font-size: var(--body); }
 }
 
 :root {
-  --unit: 8.5px;
+  --unit: 8px;
   --h1: calc(calc(var(--unit) * 2.8) / 1.6); /* 28px */
   --h2: var(--h1); 
   --h3: var(--h1);

@@ -152,16 +152,20 @@ const initPreloaderAnimation = () => {
     }
   })
   
-  // Get header height from CSS variable
-  const headerHeight = getComputedStyle(document.documentElement)
-    .getPropertyValue('--header-bar-height')
-    .trim() || '60px'
-  const headerHeightValue = parseFloat(headerHeight)
-  
   // Calculate transform values for logo animation
   // Container has align-items: start, logo starts with transform Y to center it, animates to 0
-  const viewportHeight = window.innerHeight
-  const logoHeight = headerHeightValue // Logo height equals header height
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0
+  
+  // Measure the actual logo container height (more robust than relying on CSS vars)
+  let logoHeight = 80 // sensible default
+  const logoContainer = document.querySelector('.website-icon-container')
+  if (logoContainer && logoContainer instanceof HTMLElement) {
+    const rect = logoContainer.getBoundingClientRect()
+    if (rect && rect.height > 0) {
+      logoHeight = rect.height
+    }
+  }
+  
   // Start with logo offset: half viewport height minus half logo height to center it
   const startY = (viewportHeight / 2) - (logoHeight / 2)
   const endY = 0 // Animate to 0 to move to top

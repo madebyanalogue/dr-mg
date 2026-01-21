@@ -39,18 +39,18 @@
               >
                 <div 
                   :class="[
-                    'lazyload-image-container',
+                  'lazyload-image-container',
                     `mobile-image-width-${leftSlot.mobileWidth || '12'}`,
                     `image-align-${leftSlot.alignment || 'left'}`
-                  ]"
-                >
-                  <NuxtImg
-                    :src="leftSlot.image.asset.url"
+                ]"
+              >
+                <NuxtImg
+                  :src="leftSlot.image.asset.url"
                     :alt="leftSlot.imageAlt || 'Left column image'"
-                    style="width: 100%; height: auto;"
-                    class="lazyload-image"
-                  />
-                  <div class="lazyload-cover"></div>
+                  style="width: 100%; height: auto;"
+                  class="lazyload-image"
+                />
+                <div class="lazyload-cover"></div>
                 </div>
               </div>
               <div 
@@ -84,18 +84,18 @@
               >
                 <div 
                   :class="[
-                    'lazyload-image-container',
+                  'lazyload-image-container',
                     `mobile-image-width-${rightSlot.mobileWidth || '12'}`,
                     `image-align-${rightSlot.alignment || 'left'}`
-                  ]"
-                >
-                  <NuxtImg
-                    :src="rightSlot.image.asset.url"
+                ]"
+              >
+                <NuxtImg
+                  :src="rightSlot.image.asset.url"
                     :alt="rightSlot.imageAlt || 'Right column image'"
-                    style="width: 100%; height: auto;"
-                    class="lazyload-image"
-                  />
-                  <div class="lazyload-cover"></div>
+                  style="width: 100%; height: auto;"
+                  class="lazyload-image"
+                />
+                <div class="lazyload-cover"></div>
                 </div>
               </div>
               <div 

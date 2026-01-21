@@ -29,6 +29,9 @@ body:after {
   --fade-duration: 2000ms;
   --fade-stagger: 300ms;
   --fade-initial-delay: 150ms;
+  /* Page transition timings */
+  --page-fade-in-duration: 800ms;
+  --page-fade-out-duration: 1000ms; /* overlay fade when clicking links */
 
   --gap: 25px;
   --gap-md: 50px;
@@ -72,12 +75,12 @@ body:after {
   flex-direction: column;
 }
 
-/* Page transition - smooth fade out and fade in */
+/* Page transition - smooth fade out and fade in (use CSS variables for control) */
 .page-enter-active {
-  transition: opacity 1800ms ease-out;
+  transition: opacity var(--page-fade-in-duration) ease-out;
 }
 .page-leave-active {
-  transition: opacity 1800ms ease-in;
+  transition: opacity var(--page-fade-in-duration) ease-in;
 }
 .page-enter-from {
   opacity: 0;
@@ -316,7 +319,7 @@ body.page-transitioning .app-shell.page-leave-active {
 
 body.page-transitioning .page-enter-active,
 body.page-transitioning .app-shell.page-enter-active {
-  transition: opacity 1800ms ease-out !important;
+  transition: opacity var(--page-fade-in-duration) ease-out !important;
   animation: none !important;
 }
 
@@ -324,19 +327,19 @@ body.page-transitioning .app-shell.page-enter-active {
 /* Use higher specificity to ensure these rules win */
 body .page-overlay,
 body.page-transitioning .page-overlay {
-  transition: opacity 1800ms ease !important;
+  transition: opacity var(--page-fade-out-duration) ease !important;
   animation: none !important;
 }
 
 body .page-overlay--visible,
 body.page-transitioning .page-overlay--visible {
-  transition: opacity 1800ms ease !important; /* Fade in */
+  transition: opacity var(--page-fade-out-duration) ease !important; /* Fade in */
   animation: none !important;
 }
 
 body .page-overlay:not(.page-overlay--visible),
 body.page-transitioning .page-overlay:not(.page-overlay--visible) {
-  transition: opacity 1800ms ease !important; /* Fade out */
+  transition: opacity var(--page-fade-out-duration) ease !important; /* Fade out */
   animation: none !important;
 }
 
@@ -1065,7 +1068,11 @@ main > div, .page-container main {
   text-transform: uppercase;
 }
 
-
+@media (max-width: 999px) {
+  #footer .menu-link--current {
+    border: none;
+  }
+}
 
 
 /* IMAGE LAZY LOAD */

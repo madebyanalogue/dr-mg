@@ -4,7 +4,6 @@ export function useHeaderScroll() {
   const isHeaderVisible = ref(true)
   const lastScrollY = ref(0)
   const scrollThreshold = 50 // minimum scroll amount before hiding header
-  let transitionCompleteHandler = null
 
   const handleScroll = () => {
   // During page transitions, ignore scroll events to prevent header popping
@@ -28,20 +27,25 @@ export function useHeaderScroll() {
   onMounted(() => {
     window.addEventListener('scroll', handleScroll, { passive: true })
 
-    // After a page transition completes, force header visible on the new page
-    transitionCompleteHandler = () => {
+    // When a new page finishes fading in, ensure the header is visible,
+    // but let Header.vue decide to show it instantly (no animation).
+    const onTransitionComplete = () => {
+      if (typeof document !== 'undefined') {
+        document.body.dataset.headerInstant = '1'
+      }
       isHeaderVisible.value = true
       lastScrollY.value = window.scrollY || 0
     }
-    document.addEventListener('page-transition-in-complete', transitionCompleteHandler)
+
+    document.addEventListener('page-transition-in-complete', onTransitionComplete)
+
+    onUnmounted(() => {
+      document.removeEventListener('page-transition-in-complete', onTransitionComplete)
+    })
   })
 
   onUnmounted(() => {
     window.removeEventListener('scroll', handleScroll)
-    if (transitionCompleteHandler) {
-      document.removeEventListener('page-transition-in-complete', transitionCompleteHandler)
-      transitionCompleteHandler = null
-    }
   })
 
   return {

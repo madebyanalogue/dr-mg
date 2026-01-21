@@ -82,6 +82,19 @@ export default defineEventHandler(async (event) => {
               ...,
               asset->
             },
+            // Preloader images (square images displayed before site load)
+            preloaderImages[] {
+              "image": select(
+                _type == "image" => @,
+                defined(image) => image,
+                @
+              ){
+                ...,
+                asset->
+              },
+              alt,
+              repeatLeftRight
+            },
             // Logotype image for preloader
             logotype {
               ...,
