@@ -401,10 +401,10 @@ onUnmounted(() => {
 
 .page-hero-image-wrapper {
   position: absolute;
-  top: -20%;
+  top: 0%;
   left: 0;
   width: 100%;
-  height: 140%;
+  height: 100%;
   will-change: transform;
 }
 
