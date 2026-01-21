@@ -15,10 +15,10 @@ body:after {
 }
 
 :root {
-  --logo-height: 35px;
+  --logo-height: clamp(25px, 4vw, 50px);
   --footer-logo-height: 21px;
   --header-height:var(--header-bar-height);
-  --header-bar-height: 70px;
+  --header-bar-height: clamp(70px, 10vw, 140px);
   --header-nav-height: 43px;
 
   --button-padding: calc(var(--h4) * .35) calc(var(--h4) * 1.5) calc(var(--h4) * .3);
@@ -42,8 +42,6 @@ body:after {
 
 @media (min-width: 800px) {
   :root {
-    --logo-height: 50px;
-    --header-bar-height: 140px;
     --footer-logo-height: 115px;
     --header-height: calc(var(--header-bar-height) + var(--header-nav-height));
   }

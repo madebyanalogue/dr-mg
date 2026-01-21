@@ -184,6 +184,13 @@ onMounted(() => {
   justify-content: center;
 }
 
+@media (max-width: 1000px) { 
+.blocks-container {
+  width: clamp(320px, 60%, 60%);
+}
+}
+
+
 .block-item {
   flex: 0 0 33.333%;
   padding: var(--pad-1) var(--pad-2);

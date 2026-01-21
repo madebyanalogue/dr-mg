@@ -73,7 +73,6 @@ export const useSiteSettings = () => {
     facebookUrl: computed(() => settings.value?.facebookUrl || ''),
     linkedinUrl: computed(() => settings.value?.linkedinUrl || ''),
     instagramUrl: computed(() => settings.value?.instagramUrl || ''),
-    preloaderImages: computed(() => settings.value?.preloaderImages || []),
     logotype: computed(() => settings.value?.logotype || null),
     bookingTitle: computed(() => settings.value?.bookingTitle || 'Book Your Appointment Now'),
     bookingLink: computed(() => settings.value?.bookingLink || ''),

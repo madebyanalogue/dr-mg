@@ -11,31 +11,14 @@
     class="preloader-container"
     data-loading-container
   >
-    <div class="preloader-content" :class="{ 'has-images': preloaderImages.length > 0 }">
+    <div class="preloader-content">
       <!-- Image sequence container -->
       <div 
         class="image-sequence"
         data-loading-words
       >
           <div class="image-container">
-            <img 
-              v-if="currentImageSource && currentImageIndex < preloaderImages.length"
-              :src="getImageUrl(currentImageSource)"
-              :alt="(preloaderImages[currentImageIndex]?.alt) || 'Preloader image'"
-              class="preloader-image"
-            />
-            <img 
-              v-if="currentImageSource && currentImageIndex < preloaderImages.length && preloaderImages[currentImageIndex]?.repeatLeftRight"
-              :src="getImageUrl(currentImageSource)"
-              :alt="(preloaderImages[currentImageIndex]?.alt) || 'Preloader image'"
-              class="preloader-image"
-            />
-            <img 
-              v-if="currentImageSource && currentImageIndex < preloaderImages.length && preloaderImages[currentImageIndex]?.repeatLeftRight"
-              :src="getImageUrl(currentImageSource)"
-              :alt="(preloaderImages[currentImageIndex]?.alt) || 'Preloader image'"
-              class="preloader-image"
-            />
+            <!-- Preloader images removed from settings; keep container for potential future use -->
           </div>
       </div>
 
@@ -104,7 +87,6 @@ const bgPanel2 = ref(null)
 const bgPanel3 = ref(null)
 
 // Computed properties
-const preloaderImages = computed(() => siteSettings.value?.preloaderImages || [])
 const websiteTitle = computed(() => siteSettings.value?.title || 'Dr Magdelena Goryczko')
 const logotypeImageUrl = computed(() => {
   const logotype = siteSettings.value?.logotype
@@ -142,16 +124,6 @@ const fetchLogotypeSvg = async () => {
     logotypeSvgContent.value = null
   }
 }
-// Support two data shapes: [{ image, alt }] or directly [image]
-const currentImageSource = computed(() => {
-  const item = preloaderImages.value?.[currentImageIndex.value]
-  if (!item) return null
-  // API returns objects with normalized image field
-  if (item?.image) return item.image
-  // If array of images was returned
-  return item
-})
-
 // Animation timeline
 let animationTimeline = null
 
@@ -194,181 +166,60 @@ const initPreloaderAnimation = () => {
   const startY = (viewportHeight / 2) - (logoHeight / 2)
   const endY = 0 // Animate to 0 to move to top
   
-  if (preloaderImages.value.length > 0) {
-    // New logic: Single randomized preloader image + logotype overlay
-    // Select random image
-    const randomIndex = Math.floor(Math.random() * preloaderImages.value.length)
-    currentImageIndex.value = randomIndex
-    
-    // Stage 1: Random preloader image fades in (slowed down)
-    animationTimeline.set('.image-sequence', { opacity: 0 })
-    animationTimeline.to('.image-sequence', { 
-      opacity: 1, 
-      duration: 2.5, 
-      ease: "power2.in" 
-    })
-    
-    // Stage 2: Logotype fades in vertically centered (after image, slowed down)
-    const logotypeStart = 2.5 // Start after image fade in
-    animationTimeline.set('.website-icon-container', { 
-      opacity: 0, 
-      visibility: 'visible',
-      y: startY // Start at center (0 offset since flexbox centers it)
-    }, logotypeStart)
-    animationTimeline.to('.website-icon-container', { 
-      opacity: 1, 
-      duration: 2.5, 
-      ease: "power2.in" 
-    }, logotypeStart)
-    
-    // Stage 3: Transform logo up to top of page (after logotype, slowed down)
-    const holdTime = logotypeStart + 1.0 // Hold for 1 second after logotype appears
-    const exitTime = 1.2 // Exit animation duration (slowed down)
-    
-    // Animate logo transform Y from startY to endY (center to top)
-    animationTimeline.to('.website-icon-container', {
-      y: endY, // Animate to top of screen
-      duration: exitTime,
-      ease: "power2.inOut",
-      onComplete: () => {
-        // Set final position to ensure logo touches the very top
-        const logoElement = document.querySelector('.website-icon-container')
-        if (logoElement) {
-          gsap.set(logoElement, {
-            position: 'absolute',
-            top: '0px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            y: 0
-          })
-        }
-        // Hide preloader but keep in DOM
-        showPreloader.value = false
-        // Emit preloader complete event for section triggers
-        document.dispatchEvent(new CustomEvent('preloader-complete'))
-        // Add class to body so plugins can detect completion
-        document.body.classList.add('preloader-complete')
+  // Always use simple logo-only animation (preloader images removed)
+  // Hide image sequence immediately
+  animationTimeline.set('.image-sequence', { opacity: 0 })
+  
+  // Show logotype with fade in vertically centered (slowed down)
+  animationTimeline.set('.website-icon-container', { 
+    opacity: 0, 
+    visibility: 'visible',
+    y: startY // Start at center (0 offset since flexbox centers it)
+  })
+  animationTimeline.to('.website-icon-container', { 
+    opacity: 1, 
+    duration: 2.0, 
+    ease: "power2.out" 
+  })
+  
+  // Hold for a moment then translate logo up to top (slowed down)
+  const holdTime = 1.0 // Hold for 1 second after fade in
+  const exitTime = 1.2 // Exit animation duration (slowed down)
+  
+  // Animate logo transform Y from startY to endY (center to top)
+  animationTimeline.to('.website-icon-container', {
+    y: endY, // Animate to top of screen
+    duration: exitTime,
+    ease: "power2.inOut",
+    onComplete: () => {
+      // Set final position to ensure logo touches the very top
+      const logoElement = document.querySelector('.website-icon-container')
+      if (logoElement) {
+        gsap.set(logoElement, {
+          position: 'absolute',
+          top: '0px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          y: 0
+        })
       }
-    }, holdTime)
-    
-    // Stage 4: Fade out logo at the end (TEMPORARILY DISABLED)
-    // const fadeOutStart = holdTime + exitTime
-    // animationTimeline.to('.website-icon-container', {
-    //   opacity: 0,
-    //   duration: 0.8,
-    //   ease: "power2.out",
-    //   onComplete: () => {
-    //     // Set final position to ensure logo touches the very top
-    //     const logoElement = document.querySelector('.website-icon-container')
-    //     if (logoElement) {
-    //       gsap.set(logoElement, {
-    //         position: 'absolute',
-    //         top: '0px',
-    //         left: '50%',
-    //         transform: 'translateX(-50%)',
-    //         y: 0
-    //       })
-    //     }
-    //     // Hide preloader but keep in DOM
-    //     showPreloader.value = false
-    //     // Emit preloader complete event for section triggers
-    //     document.dispatchEvent(new CustomEvent('preloader-complete'))
-    //     // Add class to body so plugins can detect completion
-    //     document.body.classList.add('preloader-complete')
-    //   }
-    // }, fadeOutStart)
-    
-    // Animate preloader-bg container independently with its own timing
-    const backdropStart = holdTime // Start at same time as logo movement
-    const backdropDuration = exitTime + 0.4 // Slightly longer duration for backdrop
-    animationTimeline.to(preloaderBg.value, {
-      y: '-100%',
-      duration: backdropDuration,
-      ease: "power2.inOut"
-    }, backdropStart) // Independent start time
-  } else {
-    // No preloader images - just show logotype
-    // Hide image sequence immediately
-    animationTimeline.set('.image-sequence', { opacity: 0 })
-    
-    // Show logotype with fade in vertically centered (slowed down)
-    animationTimeline.set('.website-icon-container', { 
-      opacity: 0, 
-      visibility: 'visible',
-      y: startY // Start at center (0 offset since flexbox centers it)
-    })
-    animationTimeline.to('.website-icon-container', { 
-      opacity: 1, 
-      duration: 2.0, 
-      ease: "power2.out" 
-    })
-    
-    // Hold for a moment then translate logo up to top (slowed down)
-    const holdTime = 1.0 // Hold for 1 second after fade in
-    const exitTime = 1.2 // Exit animation duration (slowed down)
-    
-    // Animate logo transform Y from startY to endY (center to top)
-    animationTimeline.to('.website-icon-container', {
-      y: endY, // Animate to top of screen
-      duration: exitTime,
-      ease: "power2.inOut",
-      onComplete: () => {
-        // Set final position to ensure logo touches the very top
-        const logoElement = document.querySelector('.website-icon-container')
-        if (logoElement) {
-          gsap.set(logoElement, {
-            position: 'absolute',
-            top: '0px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            y: 0
-          })
-        }
-        // Hide preloader but keep in DOM
-        showPreloader.value = false
-        // Emit preloader complete event for section triggers
-        document.dispatchEvent(new CustomEvent('preloader-complete'))
-        // Add class to body so plugins can detect completion
-        document.body.classList.add('preloader-complete')
-      }
-    }, holdTime)
-    
-    // Fade out logo at the end (TEMPORARILY DISABLED)
-    // const fadeOutStart = holdTime + exitTime
-    // animationTimeline.to('.website-icon-container', {
-    //   opacity: 0,
-    //   duration: 0.8,
-    //   ease: "power2.out",
-    //   onComplete: () => {
-    //     // Set final position to ensure logo touches the very top
-    //     const logoElement = document.querySelector('.website-icon-container')
-    //     if (logoElement) {
-    //       gsap.set(logoElement, {
-    //         position: 'absolute',
-    //         top: '0px',
-    //         left: '50%',
-    //         transform: 'translateX(-50%)',
-    //         y: 0
-    //       })
-    //     }
-    //     // Hide preloader but keep in DOM
-    //     showPreloader.value = false
-    //     // Emit preloader complete event for section triggers
-    //     document.dispatchEvent(new CustomEvent('preloader-complete'))
-    //     // Add class to body so plugins can detect completion
-    //     document.body.classList.add('preloader-complete')
-    //   }
-    // }, fadeOutStart)
-    
-    // Animate preloader-bg container independently with its own timing
-    const backdropStart = holdTime // Start at same time as logo movement
-    const backdropDuration = exitTime + 0.4 // Slightly longer duration for backdrop
-    animationTimeline.to(preloaderBg.value, {
-      y: '-100%',
-      duration: backdropDuration,
-      ease: "power2.inOut"
-    }, backdropStart) // Independent start time
-  }
+      // Hide preloader but keep in DOM
+      showPreloader.value = false
+      // Emit preloader complete event for section triggers
+      document.dispatchEvent(new CustomEvent('preloader-complete'))
+      // Add class to body so plugins can detect completion
+      document.body.classList.add('preloader-complete')
+    }
+  }, holdTime)
+  
+  // Animate preloader-bg container independently with its own timing
+  const backdropStart = holdTime // Start at same time as logo movement
+  const backdropDuration = exitTime + 0.4 // Slightly longer duration for backdrop
+  animationTimeline.to(preloaderBg.value, {
+    y: '-100%',
+    duration: backdropDuration,
+    ease: "power2.inOut"
+  }, backdropStart) // Independent start time
 }
 
 // Hide preloader manually

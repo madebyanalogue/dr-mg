@@ -15,12 +15,19 @@
                 <div class="footer-menu">
                   <div class="grid grid-1 gap-1">
                     <ul class="menu-list">
-                      <li v-for="(item, index) in footerMenu.items" :key="item._key || item.text" class="menu-list-item" data-fade-in :data-fade-in-delay="index * 100">
+                      <li
+                        v-for="(item, index) in footerMenu.items"
+                        :key="item._key || item.text"
+                        class="menu-list-item"
+                        data-fade-in
+                        :data-fade-in-delay="index * 100"
+                      >
                         <NuxtLink 
                           v-if="getMenuItemUrl(item) && !isExternalUrl(item.to?.url)" 
                           :to="getMenuItemUrl(item)" 
                           class="menu-link"
-                          @click="handleFooterMenuClick(item)"
+                          :class="{ 'menu-link--current': isCurrentFooterItem(item) }"
+                          @click="handleFooterLinkClick($event, item)"
                         >
                           <span class="menu-link-text">{{ item.text }}</span>
                         </NuxtLink>
@@ -124,6 +131,48 @@ const isExternalUrl = (url) => {
   return !url.startsWith('/') && !url.startsWith('#')
 }
 
+// If the footer link points to the current page, scroll to top instead of re-navigating
+const handleFooterLinkClick = (event, item) => {
+  if (!isCurrentFooterItem(item)) {
+    // Different page: let NuxtLink handle navigation + transitions
+    return
+  }
+  
+  // Same page: prevent navigation and just scroll to top smoothly
+  event.preventDefault()
+  
+  if (typeof window !== 'undefined') {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+}
+
+// Determine if a footer menu item points to the current page (same logic as header / main menu)
+const isCurrentFooterItem = (item) => {
+  if (!item.to?.page?.slug?.current) return false
+  
+  const itemSlug = item.to.page.slug.current
+  const itemPath = itemSlug === 'index' ? '/' : `/${itemSlug}`
+  const currentPath = route.path.split('#')[0].replace(/\/$/, '') || '/'
+  const normalizedCurrentPath = currentPath === '/index' ? '/' : currentPath
+  const itemPathClean = itemPath.split('#')[0].replace(/\/$/, '') || '/'
+  
+  // Special handling for homepage
+  if (normalizedCurrentPath === '/' && (itemPathClean === '/' || itemSlug === 'index')) {
+    return true
+  }
+  
+  // Don't treat other items as current when we're on home
+  if (itemPathClean === '/') {
+    return false
+  }
+  
+  // Match exact path or nested paths (e.g. /services and /services/treatments)
+  return (
+    normalizedCurrentPath === itemPathClean ||
+    normalizedCurrentPath.startsWith(itemPathClean + '/')
+  )
+}
+
 // Helper function to get menu item URL
 const getMenuItemUrl = (item) => {
   if (item.to?.page?.slug?.current) {
@@ -171,38 +220,6 @@ const formatDay = (day) => {
     sunday: 'Sunday'
   }
   return dayMap[day] || day
-}
-
-// Handle footer menu link click with scroll to top animation
-const handleFooterMenuClick = (item) => {
-  // Only scroll to top for internal links (not external or anchors)
-  if (!item.to?.page?.slug?.current || isExternalUrl(item.to?.url)) {
-    return
-  }
-  
-  // Scroll to top when clicking a footer menu item with slower animation
-  // If the item has an anchor, the section-scroll plugin will handle scrolling to the section after navigation
-  if (typeof window !== 'undefined') {
-    const startPosition = window.scrollY || window.pageYOffset
-    const startTime = performance.now()
-    const duration = 800 // Slower scroll duration in milliseconds
-    
-    const animateScroll = (currentTime) => {
-      const elapsed = currentTime - startTime
-      const progress = Math.min(elapsed / duration, 1)
-      
-      // Easing function for smooth deceleration
-      const ease = 1 - Math.pow(1 - progress, 3)
-      
-      window.scrollTo(0, startPosition * (1 - ease))
-      
-      if (progress < 1) {
-        requestAnimationFrame(animateScroll)
-      }
-    }
-    
-    requestAnimationFrame(animateScroll)
-  }
 }
 
 // Split contact info into two halves for equal distribution across columns

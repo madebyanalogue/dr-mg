@@ -15,14 +15,14 @@
   >
     <div class="wrapper">
       <div class="">
-        <div class="grid grid-1 grid-md-12 gap-4">
+        <div class="grid gap-3 gap-4-md">
           <!-- Title in columns 1-4 -->
-          <div class="col-span-4-md" data-fade-in>
-            <h4 class="h2">{{ section.titleAndTextContent?.title }}</h4>
+          <div class="col-span-3 col-span-4-md" data-fade-in>
+            <h4 class="body h2-md uppercase">{{ section.titleAndTextContent?.title }}</h4>
           </div>
 
           <!-- Text and Buttons in columns 5-12 -->
-          <div class="col-span-8-md grid grid-1 gap-4">
+          <div class="col-span-9 col-span-8-md grid grid-1 gap-4">
             <!-- Buttons above text if enabled -->
             <div 
               v-if="section.titleAndTextContent?.buttonsAboveText && buttons.length > 0" 

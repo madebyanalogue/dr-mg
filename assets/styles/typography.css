@@ -54,15 +54,12 @@ transition: color 1s ease;
 
 @keyframes button-hover-text {
   0% {
-    filter: blur(0);
     opacity: 1;
     color: rgb(var(--black));
   }
   50% {
-    filter: blur(10px);
   }
   100% {
-    filter: blur(0px);
     opacity: 1;
     color: rgb(var(--white));
   }
@@ -111,7 +108,7 @@ body         { font-size: var(--body); }
 }
 
 :root {
-  --unit: 10px;
+  --unit: 8.5px;
   --h1: calc(calc(var(--unit) * 2.8) / 1.6); /* 28px */
   --h2: var(--h1); 
   --h3: var(--h1);
@@ -120,15 +117,18 @@ body         { font-size: var(--body); }
   --h6:  var(--h5);
   --body: calc(calc(var(--unit) * 2.6) / 1.6); /* 26px */
 }
-@media (min-width: 700px) {
+@media (min-width: 800px) {
   :root {
-    --unit: 2vw;
+    --unit: 12px;
   }
 }
 
 @media (min-width: 1000px) {
   :root {
     --unit: 1vw;
+  }
+  .h2-md {
+    font-size: var(--h2);
   }
 }
 

@@ -80,7 +80,7 @@ defineEmits(['toggle-menu'])
 }
 
 
-@media (min-width: 1000px) {
+/* @media (min-width: 1000px) {
   .hamburger {
     gap: 7px;
   }
@@ -90,6 +90,6 @@ defineEmits(['toggle-menu'])
   .menu-active .hamburger-line:nth-child(3) {
     transform: translateY(-8px) rotate(-45deg);
   }
-}
+} */
 
 </style>

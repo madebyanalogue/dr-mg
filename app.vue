@@ -14,7 +14,7 @@
   ></div>
 
   <!-- Header - persistent outside page transitions so menu doesn't get affected by DOM restructuring -->
-  <Header v-if="preloaderReady && !hideHeaderForTestImage" :page-data="page" />
+  <Header v-if="preloaderReady" :page-data="page" />
 
   <!-- Page transitions (wrap page content only, header is outside) -->
   <template v-if="!disablePageTransition">
@@ -109,33 +109,6 @@ const { enableScrollAnimations } = useScrollTrigger();
 const preloaderReady = ref(false)
 const isPageTransitioning = ref(false)
 const showPageOverlay = ref(false)
-
-// Hide header when a Test Image section explicitly requests it
-const hideHeaderForTestImage = computed(() => {
-  const sections = page.value?.sections
-  if (!Array.isArray(sections)) return false
-
-  return sections.some(section =>
-    section &&
-    section._type === 'section' &&
-    section.sectionType === 'testImage' &&
-    section.testImageContent &&
-    section.testImageContent.hideHeader === true
-  )
-})
-
-// Detect if current page includes a Test Image section
-const hasTestImageSection = computed(() => {
-  const sections = page.value?.sections
-  if (!Array.isArray(sections)) return false
-
-  return sections.some(section =>
-    section &&
-    section._type === 'section' &&
-    section.sectionType === 'testImage'
-  )
-})
-
 
 // Debug logging for video
 if (process.env.NODE_ENV === 'development') {
