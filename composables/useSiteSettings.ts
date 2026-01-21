@@ -87,6 +87,7 @@ export const useSiteSettings = () => {
     heroRightText: computed(() => settings.value?.heroRightText || ''),
     defaultHeroVideo: computed(() => settings.value?.defaultHeroVideo || null),
     defaultHeroImage: computed(() => settings.value?.defaultHeroImage || null),
+    defaultMetaDescription: computed(() => settings.value?.defaultMetaDescription || ''),
     newsletterActionUrl: computed(() => settings.value?.newsletterActionUrl || ''),
     newsletterTitleFooter: computed(() => settings.value?.newsletterTitleFooter || ''),
     newsletterTitleHero: computed(() => settings.value?.newsletterTitleHero || ''),

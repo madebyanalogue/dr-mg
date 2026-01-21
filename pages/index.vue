@@ -46,25 +46,22 @@ const config = useRuntimeConfig()
 const { page: pageData, error, pending } = usePageSettings()
 
 // Get site settings once
-const { title: websiteTitle, defaultHeroVideo, defaultHeroImage } = useSiteSettings()
-
-
-// Watch for changes in pageData to update title
-watch(() => pageData.value, (newData) => {
-  if (newData) {
-    const pageTitle = newData.title || 'Home'
-    const fullTitle = `${websiteTitle.value} | ${pageTitle}`
-    useHead({
-      title: fullTitle
-    })
-  }
-}, { immediate: true })
+const { title: websiteTitle, defaultHeroVideo, defaultHeroImage, defaultMetaDescription } = useSiteSettings()
 
 // Page meta
 useHead(() => {
   const title = pageData.value?.title || 'Home';
+  const metaTitle = pageData.value?.seo?.metaTitle || title;
+  const metaDescription = pageData.value?.seo?.metaDescription || defaultMetaDescription.value;
+  
   return { 
-    title: `${websiteTitle.value} | ${title}`
+    title: `${websiteTitle.value} | ${metaTitle}`,
+    meta: [
+      {
+        name: 'description',
+        content: metaDescription
+      }
+    ]
   };
 })
 

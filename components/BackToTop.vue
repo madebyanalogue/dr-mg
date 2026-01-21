@@ -2,7 +2,7 @@
     <transition name="fade">
       <div v-if="!isFooterHidden">
         <div class="back-to-top">
-          <button @click="scrollToTop">
+          <button @click="scrollToTop" aria-label="Scroll to top">
             <div class="background"></div>
             <div class="arrow"></div>
           </button>

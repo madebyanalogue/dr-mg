@@ -4,6 +4,8 @@
     data-navigation-toggle="toggle"
     class="menu-button"
     :class="{ 'menu-active': isActive }"
+    :aria-label="isActive ? 'Close menu' : 'Open menu'"
+    :aria-expanded="isActive"
     @click="$emit('toggle-menu')"
   >
     <div class="hamburger">
