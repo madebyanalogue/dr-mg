@@ -383,21 +383,22 @@ onUnmounted(() => {
 .page-hero {
   position: relative;
   width: 100%;
-  height: 100vh;
   overflow: hidden;
   z-index: 1;
   margin-top: 0;
-
+ aspect-ratio: 3/2;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
-@media all and (max-width: 800px) {
+
+@media all and (min-width: 1000px) {
   .page-hero {
-    max-height: 600px;
+    max-height: 100vh;
   }
 }
+
 .page-hero-image-wrapper {
   position: absolute;
   top: -20%;
@@ -465,6 +466,7 @@ onUnmounted(() => {
   padding: 0 var(--wrapper-padding);
   pointer-events: none;
   transition: opacity 0.3s ease-out;
+  flex-direction: row;
 }
 
 @media (min-width: 1000px) {
