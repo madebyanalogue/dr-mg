@@ -79,14 +79,14 @@
                 v-if="rightSlot.type === 'image' && rightSlot.image"
                 :class="[
                   'mobile-image-wrapper',
-                  `mobile-image-align-${rightSlot.alignment || 'left'}`
+                  `mobile-image-align-${rightSlot.alignment || 'right'}`
                 ]"
               >
                 <div 
                   :class="[
                   'lazyload-image-container',
                     `mobile-image-width-${rightSlot.mobileWidth || '12'}`,
-                    `image-align-${rightSlot.alignment || 'left'}`
+                    `image-align-${rightSlot.alignment || 'right'}`
                 ]"
               >
                 <NuxtImg
@@ -98,11 +98,22 @@
                 <div class="lazyload-cover"></div>
                 </div>
               </div>
+              <!-- Text with mobile flexbox wrapper -->
               <div 
-                v-else-if="rightSlot.type === 'text' && rightSlot.text && rightSlot.text.length > 0" 
-                class="text-content body"
+                v-else-if="rightSlot.type === 'text' && rightSlot.text && rightSlot.text.length > 0"
+                :class="[
+                  'mobile-content-wrapper',
+                  `mobile-content-align-${rightSlot.alignment || 'right'}`
+                ]"
               >
-                <SanityBlocks :blocks="rightSlot.text" />
+                <div 
+                  :class="[
+                    'text-content body',
+                    `mobile-content-width-${rightSlot.mobileWidth || '12'}`
+                  ]"
+                >
+                  <SanityBlocks :blocks="rightSlot.text" />
+                </div>
               </div>
             </div>
           </div>
@@ -198,6 +209,12 @@ const hasContent = computed(() => {
     width: 100%;
   }
 
+  /* Mobile content wrapper - flexbox container for text */
+  .mobile-content-wrapper {
+    display: flex;
+    width: 100%;
+  }
+
   /* Mobile image width classes (6-12 columns) */
   .mobile-image-width-6 {
     max-width: calc((100% / 12) * 6);
@@ -227,6 +244,35 @@ const hasContent = computed(() => {
     max-width: 100%;
   }
 
+  /* Mobile content width classes (6-12 columns) */
+  .mobile-content-width-6 {
+    max-width: calc((100% / 12) * 6);
+  }
+
+  .mobile-content-width-7 {
+    max-width: calc((100% / 12) * 7);
+  }
+
+  .mobile-content-width-8 {
+    max-width: calc((100% / 12) * 8);
+  }
+
+  .mobile-content-width-9 {
+    max-width: calc((100% / 12) * 9);
+  }
+
+  .mobile-content-width-10 {
+    max-width: calc((100% / 12) * 10);
+  }
+
+  .mobile-content-width-11 {
+    max-width: calc((100% / 12) * 11);
+  }
+
+  .mobile-content-width-12 {
+    max-width: 100%;
+  }
+
   /* Mobile image alignment */
   .mobile-image-align-left {
     justify-content: flex-start;
@@ -237,6 +283,19 @@ const hasContent = computed(() => {
   }
 
   .mobile-image-align-right {
+    justify-content: flex-end;
+  }
+
+  /* Mobile content alignment */
+  .mobile-content-align-left {
+    justify-content: flex-start;
+  }
+
+  .mobile-content-align-center {
+    justify-content: center;
+  }
+
+  .mobile-content-align-right {
     justify-content: flex-end;
   }
 }
@@ -262,7 +321,8 @@ const hasContent = computed(() => {
 
 /* On desktop, remove flexbox wrapper constraints */
 @media (min-width: 1000px) {
-  .mobile-image-wrapper {
+  .mobile-image-wrapper,
+  .mobile-content-wrapper {
     display: block;
     max-width: 100%;
   }

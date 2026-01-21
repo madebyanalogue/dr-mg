@@ -386,7 +386,7 @@ onUnmounted(() => {
   overflow: hidden;
   z-index: 1;
   margin-top: 0;
- aspect-ratio: 3/2;
+ aspect-ratio: 4/3;
   display: flex;
   flex-direction: column;
   align-items: center;
