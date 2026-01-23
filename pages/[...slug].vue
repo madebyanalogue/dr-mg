@@ -54,22 +54,13 @@ const slug = computed(() => route.params.slug?.join('/') || '')
 const { page: pageData, error, pending } = usePageSettings()
 
 // Call useSiteSettings once at setup level
-const { title: websiteTitle, defaultHeroVideo, defaultHeroImage, defaultMetaDescription } = useSiteSettings()
+const { title: websiteTitle, defaultHeroVideo, defaultHeroImage } = useSiteSettings()
 
 // Page meta - use the already-fetched websiteTitle
 useHead(() => {
   const title = pageData.value?.title || 'Page Not Found';
-  const metaTitle = pageData.value?.seo?.metaTitle || title;
-  const metaDescription = pageData.value?.seo?.metaDescription || defaultMetaDescription.value;
-  
   return { 
-    title: `${websiteTitle.value} | ${metaTitle}`,
-    meta: [
-      {
-        name: 'description',
-        content: metaDescription
-      }
-    ]
+    title: `${websiteTitle.value} | ${title}`
   };
 })
 

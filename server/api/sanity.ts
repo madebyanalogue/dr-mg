@@ -279,19 +279,6 @@ export default defineEventHandler(async (event) => {
           greyBackground,
           backgroundGradientStart,
           backgroundGradientEnd,
-          seo {
-            metaTitle,
-            metaDescription,
-            ogImage {
-              asset-> {
-                _id,
-                url,
-                metadata {
-                  dimensions
-                }
-              }
-            }
-          },
           heroVideo {
             asset-> {
               _id,

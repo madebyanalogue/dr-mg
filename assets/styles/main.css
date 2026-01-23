@@ -1064,7 +1064,7 @@ main > div, .page-container main {
 .menu-link-text {
   margin: 0;
   position: relative;
-  font-size: var(--h4);
+  font-size: clamp(12px, 1.5vw, var(--h4));
   text-transform: uppercase;
 }
 
