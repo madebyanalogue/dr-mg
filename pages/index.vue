@@ -58,37 +58,54 @@ const {
 // Get image URL helper
 const { getImageUrl } = useSanityImage()
 
-// Page meta - use page-specific SEO data if available, otherwise use defaults
-useHead(() => {
-  const pageTitle = pageData.value?.seo?.metaTitle || pageData.value?.title || 'Home'
-  const fullTitle = pageData.value?.seo?.metaTitle 
-    ? `${websiteTitle.value} | ${pageData.value.seo.metaTitle}`
-    : `${websiteTitle.value} | ${pageData.value?.title || 'Home'}`
-  
-  const metaDescription = pageData.value?.seo?.metaDescription || defaultMetaDescription.value || ''
-  
-  // Get OG image - use page-specific if available, then default
-  let ogImageUrl = null
+// Computed values for SEO - these will be reactive
+const pageTitle = computed(() => pageData.value?.seo?.metaTitle || pageData.value?.title || 'Home')
+const fullTitle = computed(() => pageData.value?.seo?.metaTitle 
+  ? `${websiteTitle.value} | ${pageData.value.seo.metaTitle}`
+  : `${websiteTitle.value} | ${pageData.value?.title || 'Home'}`)
+
+const metaDescription = computed(() => pageData.value?.seo?.metaDescription || defaultMetaDescription.value || '')
+
+const ogImageUrl = computed(() => {
   if (pageData.value?.seo?.ogImage?.asset) {
-    ogImageUrl = getImageUrl(pageData.value.seo.ogImage, { width: 1200, quality: 85 })
+    return getImageUrl(pageData.value.seo.ogImage, { width: 1200, quality: 85 })
   } else if (defaultOgImage.value?.asset) {
-    ogImageUrl = getImageUrl(defaultOgImage.value, { width: 1200, quality: 85 })
+    return getImageUrl(defaultOgImage.value, { width: 1200, quality: 85 })
   }
-  
-  const meta = []
-  
-  if (metaDescription) {
-    meta.push({
+  return null
+})
+
+// Get current URL - works for both SSR and client
+const route = useRoute()
+const currentUrl = computed(() => {
+  const baseUrl = config.public.siteUrl || 'https://www.drmagdalena.co.uk'
+  return typeof window !== 'undefined' 
+    ? window.location.href 
+    : `${baseUrl}${route.path === '/' ? '' : route.path}`
+})
+
+// Page meta - use function form to ensure SSR rendering
+useHead(() => {
+  const metaArray = [
+    {
       name: 'description',
-      content: metaDescription
-    })
-  }
+      content: metaDescription.value
+    },
+    {
+      property: 'og:title',
+      content: fullTitle.value
+    },
+    {
+      property: 'og:url',
+      content: currentUrl.value
+    }
+  ]
   
-  if (ogImageUrl) {
-    meta.push(
+  if (ogImageUrl.value) {
+    metaArray.push(
       {
         property: 'og:image',
-        content: ogImageUrl
+        content: ogImageUrl.value
       },
       {
         property: 'og:image:width',
@@ -101,20 +118,9 @@ useHead(() => {
     )
   }
   
-  meta.push(
-    {
-      property: 'og:title',
-      content: fullTitle
-    },
-    {
-      property: 'og:url',
-      content: typeof window !== 'undefined' ? window.location.href : ''
-    }
-  )
-  
   return {
-    title: fullTitle,
-    meta
+    title: fullTitle.value,
+    meta: metaArray
   }
 })
 
