@@ -66,53 +66,37 @@ const {
 // Get image URL helper
 const { getImageUrl } = useSanityImage()
 
-// Computed values for SEO - these will be reactive
-const pageTitle = computed(() => pageData.value?.seo?.metaTitle || pageData.value?.title || 'Page Not Found')
-const fullTitle = computed(() => pageData.value?.seo?.metaTitle 
-  ? `${websiteTitle.value} | ${pageData.value.seo.metaTitle}`
-  : `${websiteTitle.value} | ${pageData.value?.title || 'Page Not Found'}`)
-
-const metaDescription = computed(() => pageData.value?.seo?.metaDescription || defaultMetaDescription.value || '')
-
-const ogImageUrl = computed(() => {
-  if (pageData.value?.seo?.ogImage?.asset) {
-    return getImageUrl(pageData.value.seo.ogImage, { width: 1200, quality: 85 })
-  } else if (defaultOgImage.value?.asset) {
-    return getImageUrl(defaultOgImage.value, { width: 1200, quality: 85 })
-  }
-  return null
-})
-
-// Get current URL - works for both SSR and client
-const currentUrl = computed(() => {
-  const baseUrl = config.public.siteUrl || 'https://www.drmagdalena.co.uk'
-  return typeof window !== 'undefined' 
-    ? window.location.href 
-    : `${baseUrl}${route.path === '/' ? '' : route.path}`
-})
-
-// Page meta - use function form to ensure SSR rendering
+// Page meta - use page-specific SEO data if available, otherwise use defaults
 useHead(() => {
-  const metaArray = [
-    {
-      name: 'description',
-      content: metaDescription.value
-    },
-    {
-      property: 'og:title',
-      content: fullTitle.value
-    },
-    {
-      property: 'og:url',
-      content: currentUrl.value
-    }
-  ]
+  const pageTitle = pageData.value?.seo?.metaTitle || pageData.value?.title || 'Page Not Found'
+  const fullTitle = pageData.value?.seo?.metaTitle 
+    ? `${websiteTitle.value} | ${pageData.value.seo.metaTitle}`
+    : `${websiteTitle.value} | ${pageData.value?.title || 'Page Not Found'}`
   
-  if (ogImageUrl.value) {
-    metaArray.push(
+  const metaDescription = pageData.value?.seo?.metaDescription || defaultMetaDescription.value || ''
+  
+  // Get OG image - use page-specific if available, then default
+  let ogImageUrl = null
+  if (pageData.value?.seo?.ogImage?.asset) {
+    ogImageUrl = getImageUrl(pageData.value.seo.ogImage, { width: 1200, quality: 85 })
+  } else if (defaultOgImage.value?.asset) {
+    ogImageUrl = getImageUrl(defaultOgImage.value, { width: 1200, quality: 85 })
+  }
+  
+  const meta = []
+  
+  if (metaDescription) {
+    meta.push({
+      name: 'description',
+      content: metaDescription
+    })
+  }
+  
+  if (ogImageUrl) {
+    meta.push(
       {
         property: 'og:image',
-        content: ogImageUrl.value
+        content: ogImageUrl
       },
       {
         property: 'og:image:width',
@@ -125,9 +109,20 @@ useHead(() => {
     )
   }
   
+  meta.push(
+    {
+      property: 'og:title',
+      content: fullTitle
+    },
+    {
+      property: 'og:url',
+      content: typeof window !== 'undefined' ? window.location.href : ''
+    }
+  )
+  
   return {
-    title: fullTitle.value,
-    meta: metaArray
+    title: fullTitle,
+    meta
   }
 })
 

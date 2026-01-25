@@ -19,6 +19,7 @@
         muted
         playsinline
         preload="auto"
+        loading="eager"
         @loadeddata="onVideoLoaded"
         @error="onVideoError"
       />
@@ -254,15 +255,15 @@ const handleScroll = () => {
 
 // Handle video loaded event
 const onVideoLoaded = () => {
+  if (videoLoaded.value) return // Already handled
   videoLoaded.value = true
   if (videoRef.value) {
     videoRef.value.play().catch(error => {
       console.warn('[PageHero] Video autoplay failed after load:', error)
     })
   }
-  setTimeout(() => {
-    contentReady.value = true
-  }, 100)
+  // Set contentReady immediately - video is ready to play
+  contentReady.value = true
 }
 
 // Handle video errors
@@ -306,6 +307,15 @@ onMounted(async () => {
   }
   
   if (typeof window !== 'undefined' && (hasVideo.value || hasImage.value)) {
+    // For videos, start loading immediately and mark as ready right away
+    // The video will play when it's ready, but we don't need to wait
+    if (hasVideo.value && videoRef.value) {
+      // Force video to start loading immediately
+      videoRef.value.load()
+      // Mark as ready immediately - video will appear as soon as it loads
+      contentReady.value = true
+    }
+    
     // Set initial hero-in-view class
     if (typeof document !== 'undefined') {
       const scrollY = window.scrollY || window.pageYOffset
