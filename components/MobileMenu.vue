@@ -250,11 +250,11 @@ const openNav = () => {
     }
   })
   
-  // Get menu links dynamically
-  const menuLinks = navWrap.value.querySelectorAll(".menu-link")
+  // Get menu links dynamically - convert to array to avoid NodeList issues
+  const menuLinks = Array.from(navWrap.value.querySelectorAll(".menu-link"))
   
-  // Collect fade targets in DOM order for proper stagger
-  const fadeTargets = navWrap.value.querySelectorAll('[data-menu-fade]')
+  // Collect fade targets in DOM order for proper stagger - convert to array
+  const fadeTargets = Array.from(navWrap.value.querySelectorAll('[data-menu-fade]'))
   
   // Check if we're on desktop (horizontal menu)
   const isDesktop = window.innerWidth >= 1000
@@ -271,17 +271,21 @@ const openNav = () => {
     )
     .fromTo(overlay.value, { autoAlpha: 0 }, { autoAlpha: 1 }, "<+=0.1")
   
-  // Sequential fade in for both desktop and mobile
-  tl.fromTo(menuLinks, 
-    { opacity: 0 }, 
-    { opacity: 1, duration: 0.3, stagger: 0.05, ease: "power2.out" }, 
-    "<+=0.2"
-  )
-  .fromTo(fadeTargets, 
-    { autoAlpha: 0 }, 
-    { autoAlpha: 1, duration: 0.3, stagger: 0.05 }, 
-    "<+=0.1"
-  )
+  // Sequential fade in for both desktop and mobile - only if elements exist
+  if (menuLinks.length > 0) {
+    tl.fromTo(menuLinks, 
+      { opacity: 0 }, 
+      { opacity: 1, duration: 0.3, stagger: 0.05, ease: "power2.out" }, 
+      "<+=0.2"
+    )
+  }
+  if (fadeTargets.length > 0) {
+    tl.fromTo(fadeTargets, 
+      { autoAlpha: 0 }, 
+      { autoAlpha: 1, duration: 0.3, stagger: 0.05 }, 
+      "<+=0.1"
+    )
+  }
 }
 
 const closeNav = (callback = null) => {
@@ -310,22 +314,26 @@ const closeNav = (callback = null) => {
     }
   })
   
-  // Get menu links dynamically
-  const menuLinks = navWrap.value.querySelectorAll(".menu-link")
-  const fadeTargets = navWrap.value.querySelectorAll('[data-menu-fade]')
+  // Get menu links dynamically - convert to array to avoid NodeList issues
+  const menuLinks = Array.from(navWrap.value.querySelectorAll(".menu-link"))
+  const fadeTargets = Array.from(navWrap.value.querySelectorAll('[data-menu-fade]'))
   
   // Check if we're on desktop
   const isDesktop = window.innerWidth >= 1000
   
-  // Fade out all items together (no stagger)
-  tl.to(menuLinks, 
-    { opacity: 0, duration: 0.2, ease: "power2.in" }, 
-    0
-  )
-  .to(fadeTargets, 
-    { autoAlpha: 0, yPercent: -50 }, 
-    "<"
-  )
+  // Fade out all items together (no stagger) - only if elements exist
+  if (menuLinks.length > 0) {
+    tl.to(menuLinks, 
+      { opacity: 0, duration: 0.2, ease: "power2.in" }, 
+      0
+    )
+  }
+  if (fadeTargets.length > 0) {
+    tl.to(fadeTargets, 
+      { autoAlpha: 0, yPercent: -50 }, 
+      "<"
+    )
+  }
   .to(overlay.value, { autoAlpha: 0 }, "<")
   .to(backdrop.value, 
     { y: "-100%", duration: 0.3, ease: "power2.in" }, 

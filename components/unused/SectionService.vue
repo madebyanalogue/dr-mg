@@ -174,16 +174,22 @@ const setupAnimations = () => {
   // Set initial states for visible elements only
   if (window.innerWidth >= 768) {
     // Desktop: set table rows initial state
-    gsap.set(sectionRef.value.querySelectorAll('.subservices-table.desktop-version .subservice-row'), { 
-      opacity: 0,
-      y: 20
-    })
+    const desktopRows = Array.from(sectionRef.value.querySelectorAll('.subservices-table.desktop-version .subservice-row'))
+    if (desktopRows.length > 0) {
+      gsap.set(desktopRows, { 
+        opacity: 0,
+        y: 20
+      })
+    }
   } else {
     // Mobile: set div rows initial state
-    gsap.set(sectionRef.value.querySelectorAll('.subservices-table.mobile-version .subservice-row'), { 
-      opacity: 0,
-      y: 20
-    })
+    const mobileRows = Array.from(sectionRef.value.querySelectorAll('.subservices-table.mobile-version .subservice-row'))
+    if (mobileRows.length > 0) {
+      gsap.set(mobileRows, { 
+        opacity: 0,
+        y: 20
+      })
+    }
   }
 
   // Set initial states for quote/cite if present
