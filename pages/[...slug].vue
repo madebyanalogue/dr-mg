@@ -96,6 +96,16 @@ const ogImageUrl = computed(() => {
 const fullTitle = computed(() => `${websiteTitle.value} | ${metaTitle.value}`)
 const currentUrl = computed(() => getCurrentUrl())
 
+// Get image dimensions if available
+const ogImageWidth = computed(() => {
+  if (!ogImageSource.value?.asset?.metadata?.dimensions?.width) return undefined
+  return ogImageSource.value.asset.metadata.dimensions.width
+})
+const ogImageHeight = computed(() => {
+  if (!ogImageSource.value?.asset?.metadata?.dimensions?.height) return undefined
+  return ogImageSource.value.asset.metadata.dimensions.height
+})
+
 // Page meta with all SEO tags - reactive to data changes
 useHead(() => {
   const head = {
@@ -112,6 +122,10 @@ useHead(() => {
       {
         property: 'og:url',
         content: currentUrl.value
+      },
+      {
+        property: 'og:site_name',
+        content: websiteTitle.value
       }
     ]
   }
@@ -136,6 +150,20 @@ useHead(() => {
       property: 'og:image',
       content: ogImageUrl.value
     })
+
+    // Add image dimensions if available (recommended by Facebook)
+    if (ogImageWidth.value) {
+      head.meta.push({
+        property: 'og:image:width',
+        content: String(ogImageWidth.value)
+      })
+    }
+    if (ogImageHeight.value) {
+      head.meta.push({
+        property: 'og:image:height',
+        content: String(ogImageHeight.value)
+      })
+    }
   }
 
   return head
