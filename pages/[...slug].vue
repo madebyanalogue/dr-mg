@@ -66,64 +66,64 @@ const {
 // Get image URL helper
 const { getImageUrl } = useSanityImage()
 
-// Get current URL for og:url
-const getCurrentUrl = () => {
-  if (typeof window !== 'undefined') {
-    return window.location.href
+// Page meta - use page-specific SEO data if available, otherwise use defaults
+useHead(() => {
+  const pageTitle = pageData.value?.seo?.metaTitle || pageData.value?.title || 'Page Not Found'
+  const fullTitle = pageData.value?.seo?.metaTitle 
+    ? `${websiteTitle.value} | ${pageData.value.seo.metaTitle}`
+    : `${websiteTitle.value} | ${pageData.value?.title || 'Page Not Found'}`
+  
+  const metaDescription = pageData.value?.seo?.metaDescription || defaultMetaDescription.value || ''
+  
+  // Get OG image - use page-specific if available, then default
+  let ogImageUrl = null
+  if (pageData.value?.seo?.ogImage?.asset) {
+    ogImageUrl = getImageUrl(pageData.value.seo.ogImage, { width: 1200, quality: 85 })
+  } else if (defaultOgImage.value?.asset) {
+    ogImageUrl = getImageUrl(defaultOgImage.value, { width: 1200, quality: 85 })
   }
-  // Fallback for SSR
-  const baseUrl = config.public.siteUrl || 'https://www.drmagdalena.co.uk'
-  const path = route.path === '/' ? '' : route.path
-  return `${baseUrl}${path}`
-}
-
-// Computed values for SEO
-const pageTitle = computed(() => pageData.value?.title || 'Page Not Found')
-const metaTitle = computed(() => pageData.value?.seo?.metaTitle || pageTitle.value)
-const metaDescription = computed(() => {
-  const desc = pageData.value?.seo?.metaDescription || defaultMetaDescription.value
-  return desc && desc.trim() ? desc.trim() : undefined
-})
-const ogImageSource = computed(() => pageData.value?.seo?.ogImage || defaultOgImage.value)
-const ogImageUrl = computed(() => {
-  if (!ogImageSource.value) return undefined
-  // Open Graph images need absolute URLs (no proxy) for social media crawlers
-  const url = getImageUrl(ogImageSource.value, false)
-  return url || undefined
-})
-
-// Computed SEO values
-const fullTitle = computed(() => `${websiteTitle.value} | ${metaTitle.value}`)
-const currentUrl = computed(() => getCurrentUrl())
-
-// Get image dimensions if available
-const ogImageWidth = computed(() => {
-  if (!ogImageSource.value?.asset?.metadata?.dimensions?.width) return undefined
-  return ogImageSource.value.asset.metadata.dimensions.width
-})
-const ogImageHeight = computed(() => {
-  if (!ogImageSource.value?.asset?.metadata?.dimensions?.height) return undefined
-  return ogImageSource.value.asset.metadata.dimensions.height
-})
-
-// Page meta with all SEO tags - reactive to data changes
-// Use useSeoMeta for better Open Graph support
-useSeoMeta({
-  title: fullTitle,
-  description: metaDescription,
-  ogTitle: fullTitle,
-  ogDescription: metaDescription,
-  ogType: 'website',
-  ogUrl: currentUrl,
-  ogSiteName: websiteTitle,
-  ogImage: ogImageUrl,
-  ogImageWidth: ogImageWidth,
-  ogImageHeight: ogImageHeight
-})
-
-// Also set title separately
-useHead({
-  title: fullTitle
+  
+  const meta = []
+  
+  if (metaDescription) {
+    meta.push({
+      name: 'description',
+      content: metaDescription
+    })
+  }
+  
+  if (ogImageUrl) {
+    meta.push(
+      {
+        property: 'og:image',
+        content: ogImageUrl
+      },
+      {
+        property: 'og:image:width',
+        content: '1200'
+      },
+      {
+        property: 'og:image:height',
+        content: '630'
+      }
+    )
+  }
+  
+  meta.push(
+    {
+      property: 'og:title',
+      content: fullTitle
+    },
+    {
+      property: 'og:url',
+      content: typeof window !== 'undefined' ? window.location.href : ''
+    }
+  )
+  
+  return {
+    title: fullTitle,
+    meta
+  }
 })
 
 // Computed property for development mode
