@@ -95,19 +95,19 @@ const contentReady = ref(false)
 // Debug: Watch props changes
 if (process.env.NODE_ENV === 'development') {
   watch(() => props.heroImage, (newVal) => {
-    console.log('[PageHero] heroImage prop changed:', {
-      hasValue: !!newVal,
-      hasAsset: !!newVal?.asset,
-      asset: newVal?.asset
-    })
+    // console.log('[PageHero] heroImage prop changed:', {
+    //   hasValue: !!newVal,
+    //   hasAsset: !!newVal?.asset,
+    //   asset: newVal?.asset
+    // })
   }, { immediate: true, deep: true })
   
   watch(() => props.defaultHeroImage, (newVal) => {
-    console.log('[PageHero] defaultHeroImage prop changed:', {
-      hasValue: !!newVal,
-      hasAsset: !!newVal?.asset,
-      asset: newVal?.asset
-    })
+    // console.log('[PageHero] defaultHeroImage prop changed:', {
+    //   hasValue: !!newVal,
+    //   hasAsset: !!newVal?.asset,
+    //   asset: newVal?.asset
+    // })
   }, { immediate: true, deep: true })
 }
 
@@ -149,14 +149,14 @@ const imageUrl = computed(() => {
   const imageSource = props.heroImage?.asset ? props.heroImage : (props.defaultHeroImage?.asset ? props.defaultHeroImage : null)
   
   if (process.env.NODE_ENV === 'development') {
-    console.log('[PageHero] imageUrl computed:', {
-      hasHeroImage: !!props.heroImage,
-      hasHeroImageAsset: !!props.heroImage?.asset,
-      hasDefaultHeroImage: !!props.defaultHeroImage,
-      hasDefaultHeroImageAsset: !!props.defaultHeroImage?.asset,
-      imageSource: imageSource,
-      imageSourceAsset: imageSource?.asset
-    })
+    // console.log('[PageHero] imageUrl computed:', {
+    //   hasHeroImage: !!props.heroImage,
+    //   hasHeroImageAsset: !!props.heroImage?.asset,
+    //   hasDefaultHeroImage: !!props.defaultHeroImage,
+    //   hasDefaultHeroImageAsset: !!props.defaultHeroImage?.asset,
+    //   imageSource: imageSource,
+    //   imageSourceAsset: imageSource?.asset
+    // })
   }
   
   if (!imageSource?.asset) {
@@ -167,7 +167,7 @@ const imageUrl = computed(() => {
   const url = getImageUrl(imageSource)
   
   if (process.env.NODE_ENV === 'development') {
-    console.log('[PageHero] Generated image URL:', url)
+    // console.log('[PageHero] Generated image URL:', url)
   }
   
   return url
@@ -180,7 +180,7 @@ const alt = computed(() => {
 const hasVideo = computed(() => {
   const has = !!videoUrl.value
   if (process.env.NODE_ENV === 'development') {
-    console.log('[PageHero] hasVideo:', has, 'videoUrl:', videoUrl.value)
+    // console.log('[PageHero] hasVideo:', has, 'videoUrl:', videoUrl.value)
   }
   return has
 })
@@ -188,7 +188,7 @@ const hasVideo = computed(() => {
 const hasImage = computed(() => {
   const has = !!imageUrl.value && !hasVideo.value
   if (process.env.NODE_ENV === 'development') {
-    console.log('[PageHero] hasImage:', has, 'imageUrl:', imageUrl.value, 'hasVideo:', hasVideo.value)
+    // console.log('[PageHero] hasImage:', has, 'imageUrl:', imageUrl.value, 'hasVideo:', hasVideo.value)
   }
   return has
 })
@@ -293,16 +293,16 @@ const onImageError = (event) => {
 
 onMounted(async () => {
   if (process.env.NODE_ENV === 'development') {
-    console.log('[PageHero] onMounted:', {
-      hasVideo: hasVideo.value,
-      hasImage: hasImage.value,
-      videoUrl: videoUrl.value,
-      imageUrl: imageUrl.value,
-      heroImage: props.heroImage,
-      defaultHeroImage: props.defaultHeroImage,
-      heroVideo: props.heroVideo,
-      defaultHeroVideo: props.defaultHeroVideo
-    })
+    // console.log('[PageHero] onMounted:', {
+    //   hasVideo: hasVideo.value,
+    //   hasImage: hasImage.value,
+    //   videoUrl: videoUrl.value,
+    //   imageUrl: imageUrl.value,
+    //   heroImage: props.heroImage,
+    //   defaultHeroImage: props.defaultHeroImage,
+    //   heroVideo: props.heroVideo,
+    //   defaultHeroVideo: props.defaultHeroVideo
+    // })
   }
   
   if (typeof window !== 'undefined' && (hasVideo.value || hasImage.value)) {

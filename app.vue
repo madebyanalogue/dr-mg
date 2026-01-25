@@ -114,17 +114,17 @@ const showPageOverlay = ref(false)
 if (process.env.NODE_ENV === 'development') {
   watch(() => page?.value, (newPage) => {
     if (newPage) {
-      console.log('[app.vue] Page data:', newPage)
-      console.log('[app.vue] enableHeroImage:', newPage.enableHeroImage)
-      console.log('[app.vue] heroVideo:', newPage.heroVideo)
-      console.log('[app.vue] heroVideo?.asset:', newPage.heroVideo?.asset)
-      console.log('[app.vue] heroVideo?.asset?.url:', newPage.heroVideo?.asset?.url)
-      console.log('[app.vue] featuredImage:', newPage.featuredImage)
+      // console.log('[app.vue] Page data:', newPage)
+      // console.log('[app.vue] enableHeroImage:', newPage.enableHeroImage)
+      // console.log('[app.vue] heroVideo:', newPage.heroVideo)
+      // console.log('[app.vue] heroVideo?.asset:', newPage.heroVideo?.asset)
+      // console.log('[app.vue] heroVideo?.asset?.url:', newPage.heroVideo?.asset?.url)
+      // console.log('[app.vue] featuredImage:', newPage.featuredImage)
     }
   }, { immediate: true })
   
   watch(() => preloaderReady.value, (ready) => {
-    console.log('[app.vue] Preloader ready:', ready)
+    // console.log('[app.vue] Preloader ready:', ready)
   })
 }
 

@@ -25,8 +25,17 @@
                 <div class="grid grid-1 grid-md-12">
                 <div class="col-span-12 col-span-4-md col-start-5-md">
                     <div class="image-container">
+                    <!-- Use regular img for SVGs, NuxtImg for other images -->
+                    <img
+                        v-if="isSvgImage"
+                        :src="imageUrl"
+                        :alt="section.blocksContent.image.alt || 'Section image'"
+                        style="width: 33.333%; margin: 0 auto; display: block;height:auto;"
+                        loading="lazy"
+                    />
                     <NuxtImg
-                        :src="section.blocksContent.image.asset.url"
+                        v-else
+                        :src="imageUrl"
                         :alt="section.blocksContent.image.alt || 'Section image'"
                         style="width: 33.333%; margin: 0 auto; display: block;height:auto;"
                         :width="400"
@@ -72,6 +81,7 @@ import { computed, ref, onMounted, nextTick, watch } from 'vue'
 import { useSectionVisibility } from '~/composables/useSectionVisibility'
 import SanityBlocks from '~/components/SanityBlocks.vue'
 import { useSectionId } from '~/composables/useSectionId'
+import { useSanityImage } from '~/composables/useSanityImage'
 
 const props = defineProps({
   section: {
@@ -86,6 +96,30 @@ const props = defineProps({
 const sectionRef = ref(null)
 const blocksRef = ref(null)
 const { generateSectionId } = useSectionId()
+const { getImageUrl } = useSanityImage()
+
+// Get image URL and check if it's an SVG
+const imageUrl = computed(() => {
+  if (!props.section?.blocksContent?.image) return null
+  return getImageUrl(props.section.blocksContent.image)
+})
+
+const isSvgImage = computed(() => {
+  if (!props.section?.blocksContent?.image?.asset) return false
+  
+  const asset = props.section.blocksContent.image.asset
+  const mimeType = asset.mimeType || asset._type
+  const extension = asset.extension
+  
+  return (
+    (mimeType && typeof mimeType === 'string' && mimeType.toLowerCase().includes('svg')) ||
+    (extension && typeof extension === 'string' && extension.toLowerCase() === 'svg') ||
+    (imageUrl.value && typeof imageUrl.value === 'string' && (
+      imageUrl.value.toLowerCase().endsWith('.svg') || 
+      imageUrl.value.toLowerCase().includes('.svg?')
+    ))
+  )
+})
 
 // Generate section ID from title for anchor navigation
 const sectionId = computed(() => {

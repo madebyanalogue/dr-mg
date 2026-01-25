@@ -38,7 +38,7 @@
 <script setup>
 import { usePageSettings } from '~/composables/usePageSettings'
 import { useRuntimeConfig } from '#app'
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useSiteSettings } from '~/composables/useSiteSettings'
 import { useSanityImage } from '~/composables/useSanityImage'
@@ -92,31 +92,53 @@ const ogImageUrl = computed(() => {
   return url || undefined
 })
 
-// Page meta - use the already-fetched websiteTitle
+// Computed SEO values
+const fullTitle = computed(() => `${websiteTitle.value} | ${metaTitle.value}`)
+const currentUrl = computed(() => getCurrentUrl())
+
+// Page meta with all SEO tags - reactive to data changes
 useHead(() => {
-  return { 
-    title: `${websiteTitle.value} | ${metaTitle.value}`
-  };
-})
-
-// SEO Meta tags using useSeoMeta for better Open Graph support
-useSeoMeta(() => {
-  const seoMeta = {
-    ogTitle: `${websiteTitle.value} | ${metaTitle.value}`,
-    ogType: 'website',
-    ogUrl: getCurrentUrl()
+  const head = {
+    title: fullTitle.value,
+    meta: [
+      {
+        property: 'og:title',
+        content: fullTitle.value
+      },
+      {
+        property: 'og:type',
+        content: 'website'
+      },
+      {
+        property: 'og:url',
+        content: currentUrl.value
+      }
+    ]
   }
 
+  // Only add description if it exists
   if (metaDescription.value) {
-    seoMeta.description = metaDescription.value
-    seoMeta.ogDescription = metaDescription.value
+    head.meta.push(
+      {
+        name: 'description',
+        content: metaDescription.value
+      },
+      {
+        property: 'og:description',
+        content: metaDescription.value
+      }
+    )
   }
 
+  // Only add og:image if it exists
   if (ogImageUrl.value) {
-    seoMeta.ogImage = ogImageUrl.value
+    head.meta.push({
+      property: 'og:image',
+      content: ogImageUrl.value
+    })
   }
 
-  return seoMeta
+  return head
 })
 
 // Computed property for development mode

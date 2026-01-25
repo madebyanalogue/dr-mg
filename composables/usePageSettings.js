@@ -38,13 +38,13 @@ export const usePageSettings = () => {
                  }
                })
                
-               if (process.env.NODE_ENV === 'development') {
-                 console.log('[usePageSettings] Fetched page data:', {
-                   slug,
-                   hasHeroVideo: !!result?.heroVideo,
-                   heroVideo: result?.heroVideo
-                 })
-               }
+              if (process.env.NODE_ENV === 'development') {
+                // console.log('[usePageSettings] Fetched page data:', {
+                //   slug,
+                //   hasHeroVideo: !!result?.heroVideo,
+                //   heroVideo: result?.heroVideo
+                // })
+              }
         
                // Set initial values based on Sanity data or defaults
                if (result && Object.keys(result).length > 0) {
