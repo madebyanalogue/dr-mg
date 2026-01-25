@@ -87,50 +87,38 @@ useHead(() => {
   const ogImageSource = pageData.value?.seo?.ogImage || defaultOgImage.value;
   const ogImageUrl = ogImageSource ? getImageUrl(ogImageSource) : null;
   
-  const headConfig = { 
-    title: `${websiteTitle.value} | ${metaTitle}`,
-    meta: []
+  return { 
+    title: `${websiteTitle.value} | ${metaTitle}`
+  };
+})
+
+// SEO Meta tags using useSeoMeta for better Open Graph support
+useSeoMeta(() => {
+  const title = pageData.value?.title || 'Page Not Found';
+  const metaTitle = pageData.value?.seo?.metaTitle || title;
+  const metaDescription = pageData.value?.seo?.metaDescription || defaultMetaDescription.value;
+  
+  // Get OG image - prefer page-specific, fallback to default
+  const ogImageSource = pageData.value?.seo?.ogImage || defaultOgImage.value;
+  const ogImageUrl = ogImageSource ? getImageUrl(ogImageSource) : null;
+  
+  const seoMeta = {
+    description: metaDescription || undefined,
+    ogTitle: `${websiteTitle.value} | ${metaTitle}`,
+    ogType: 'website',
+    ogUrl: getCurrentUrl(),
+    ogDescription: metaDescription || undefined,
+    ogImage: ogImageUrl || undefined
   };
 
-  // Meta description
-  if (metaDescription) {
-    headConfig.meta.push({
-      name: 'description',
-      content: metaDescription
-    });
-  }
-
-  // Open Graph tags
-  headConfig.meta.push(
-    {
-      property: 'og:title',
-      content: `${websiteTitle.value} | ${metaTitle}`
-    },
-    {
-      property: 'og:type',
-      content: 'website'
-    },
-    {
-      property: 'og:url',
-      content: getCurrentUrl()
+  // Remove undefined values
+  Object.keys(seoMeta).forEach(key => {
+    if (seoMeta[key] === undefined) {
+      delete seoMeta[key];
     }
-  );
+  });
 
-  if (metaDescription) {
-    headConfig.meta.push({
-      property: 'og:description',
-      content: metaDescription
-    });
-  }
-
-  if (ogImageUrl) {
-    headConfig.meta.push({
-      property: 'og:image',
-      content: ogImageUrl
-    });
-  }
-
-  return headConfig;
+  return seoMeta;
 })
 
 // Computed property for development mode
