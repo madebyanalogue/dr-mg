@@ -92,6 +92,8 @@ export const useSiteSettings = () => {
     newsletterTitleHero: computed(() => settings.value?.newsletterTitleHero || ''),
     newsletterPlaceholder: computed(() => settings.value?.newsletterPlaceholder || 'Enter your email'),
     cookiesMessage: computed(() => settings.value?.cookiesMessage || []),
-    googleAnalyticsId: computed(() => settings.value?.googleAnalyticsId || '')
+    googleAnalyticsId: computed(() => settings.value?.googleAnalyticsId || ''),
+    defaultMetaDescription: computed(() => settings.value?.seo?.defaultMetaDescription || ''),
+    defaultOgImage: computed(() => settings.value?.seo?.defaultOgImage || null)
   }
 } 

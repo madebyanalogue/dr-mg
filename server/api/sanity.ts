@@ -201,7 +201,23 @@ export default defineEventHandler(async (event) => {
             newsletterActionUrl,
             // Cookies & Analytics
             cookiesMessage,
-            googleAnalyticsId
+            googleAnalyticsId,
+            // SEO Settings
+            seo {
+              defaultMetaDescription,
+              defaultOgImage {
+                asset-> {
+                  _id,
+                  url,
+                  metadata {
+                    dimensions {
+                      width,
+                      height
+                    }
+                  }
+                }
+              }
+            }
           }
         `)
         // Normalize menu items to always be arrays
@@ -279,6 +295,22 @@ export default defineEventHandler(async (event) => {
           greyBackground,
           backgroundGradientStart,
           backgroundGradientEnd,
+          seo {
+            metaTitle,
+            metaDescription,
+            ogImage {
+              asset-> {
+                _id,
+                url,
+                metadata {
+                  dimensions {
+                    width,
+                    height
+                  }
+                }
+              }
+            }
+          },
           heroVideo {
             asset-> {
               _id,

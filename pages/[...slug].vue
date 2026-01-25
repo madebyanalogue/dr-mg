@@ -41,6 +41,7 @@ import { useRuntimeConfig } from '#app'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useSiteSettings } from '~/composables/useSiteSettings'
+import { useSanityImage } from '~/composables/useSanityImage'
 import NotFound404 from '~/components/NotFound404.vue'
 import PageHero from '~/components/PageHero.vue'
 
@@ -54,14 +55,82 @@ const slug = computed(() => route.params.slug?.join('/') || '')
 const { page: pageData, error, pending } = usePageSettings()
 
 // Call useSiteSettings once at setup level
-const { title: websiteTitle, defaultHeroVideo, defaultHeroImage } = useSiteSettings()
+const { 
+  title: websiteTitle, 
+  defaultHeroVideo, 
+  defaultHeroImage,
+  defaultMetaDescription,
+  defaultOgImage
+} = useSiteSettings()
+
+// Get image URL helper
+const { getImageUrl } = useSanityImage()
+
+// Get current URL for og:url
+const getCurrentUrl = () => {
+  if (typeof window !== 'undefined') {
+    return window.location.href
+  }
+  // Fallback for SSR
+  const baseUrl = config.public.siteUrl || 'https://www.drmagdalena.co.uk'
+  const path = route.path === '/' ? '' : route.path
+  return `${baseUrl}${path}`
+}
 
 // Page meta - use the already-fetched websiteTitle
 useHead(() => {
   const title = pageData.value?.title || 'Page Not Found';
-  return { 
-    title: `${websiteTitle.value} | ${title}`
+  const metaTitle = pageData.value?.seo?.metaTitle || title;
+  const metaDescription = pageData.value?.seo?.metaDescription || defaultMetaDescription.value;
+  
+  // Get OG image - prefer page-specific, fallback to default
+  const ogImageSource = pageData.value?.seo?.ogImage || defaultOgImage.value;
+  const ogImageUrl = ogImageSource ? getImageUrl(ogImageSource) : null;
+  
+  const headConfig = { 
+    title: `${websiteTitle.value} | ${metaTitle}`,
+    meta: []
   };
+
+  // Meta description
+  if (metaDescription) {
+    headConfig.meta.push({
+      name: 'description',
+      content: metaDescription
+    });
+  }
+
+  // Open Graph tags
+  headConfig.meta.push(
+    {
+      property: 'og:title',
+      content: `${websiteTitle.value} | ${metaTitle}`
+    },
+    {
+      property: 'og:type',
+      content: 'website'
+    },
+    {
+      property: 'og:url',
+      content: getCurrentUrl()
+    }
+  );
+
+  if (metaDescription) {
+    headConfig.meta.push({
+      property: 'og:description',
+      content: metaDescription
+    });
+  }
+
+  if (ogImageUrl) {
+    headConfig.meta.push({
+      property: 'og:image',
+      content: ogImageUrl
+    });
+  }
+
+  return headConfig;
 })
 
 // Computed property for development mode

@@ -304,12 +304,25 @@ onMounted(() => {
       // If observer already exists, don't set up again
       if (footerObserver) return
 
+      // Helper function to check if all menu items are visible
+      const checkAllItemsVisible = () => {
+        const menuItems = footerRoot.querySelectorAll('.menu-list-item[data-fade-in]')
+        if (menuItems.length === 0) return true // No menu items, consider "all visible"
+        
+        const viewportHeight = window.innerHeight
+        return Array.from(menuItems).every(item => {
+          const itemRect = item.getBoundingClientRect()
+          // Item is visible if it's within the viewport (with 50px buffer at bottom)
+          return itemRect.top < viewportHeight && itemRect.bottom > -50
+        })
+      }
+      
       // Check if footer is already in view
       const rect = footerRoot.getBoundingClientRect()
       const isInView = rect.top < window.innerHeight && rect.bottom > 0
       
-      if (isInView) {
-        // Footer is already visible, trigger immediately
+      if (isInView && checkAllItemsVisible()) {
+        // Footer is in view and all items are visible, trigger immediately
         triggerFadeIn()
       } else {
         // Create observer to watch when footer enters viewport
@@ -317,20 +330,43 @@ onMounted(() => {
           (entries) => {
             entries.forEach((entry) => {
               if (entry.isIntersecting) {
-                triggerFadeIn()
-                // Stop observing once triggered
-                if (footerObserver) {
-                  footerObserver.unobserve(entry.target)
-                  footerObserver.disconnect()
-                  footerObserver = null
+                // Check if all menu items are in view before triggering
+                const menuItems = footerRoot.querySelectorAll('.menu-list-item[data-fade-in]')
+                if (menuItems.length > 0) {
+                  // Check if all menu items are visible (with some buffer)
+                  const viewportHeight = window.innerHeight
+                  const allItemsVisible = Array.from(menuItems).every(item => {
+                    const rect = item.getBoundingClientRect()
+                    // Item is visible if it's within the viewport (with 50px buffer at bottom)
+                    return rect.top < viewportHeight && rect.bottom > -50
+                  })
+                  
+                  // If all items are visible, trigger fade-in
+                  if (allItemsVisible) {
+                    triggerFadeIn()
+                    // Stop observing once triggered
+                    if (footerObserver) {
+                      footerObserver.unobserve(entry.target)
+                      footerObserver.disconnect()
+                      footerObserver = null
+                    }
+                  }
+                } else {
+                  // No menu items, trigger immediately when footer is in view
+                  triggerFadeIn()
+                  if (footerObserver) {
+                    footerObserver.unobserve(entry.target)
+                    footerObserver.disconnect()
+                    footerObserver = null
+                  }
                 }
               }
             })
           },
           {
             root: null,
-            rootMargin: '0px 0px 20% 0px', // Trigger when footer is 20% from bottom of viewport (earlier trigger)
-            threshold: 0.1
+            rootMargin: '0px 0px 0px 0px',
+            threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5] // Multiple thresholds to check visibility at different levels
           }
         )
 
@@ -346,10 +382,30 @@ onMounted(() => {
       if (!footerRoot) return
       const rect = footerRoot.getBoundingClientRect()
       if (rect.top < window.innerHeight && rect.bottom > 0) {
-        triggerFadeIn()
-        // Remove listener once triggered
-        if (checkFooterVisibilityHandler) {
-          window.removeEventListener('scroll', checkFooterVisibilityHandler)
+        // Check if all menu items are visible before triggering
+        const menuItems = footerRoot.querySelectorAll('.menu-list-item[data-fade-in]')
+        if (menuItems.length > 0) {
+          const viewportHeight = window.innerHeight
+          const allItemsVisible = Array.from(menuItems).every(item => {
+            const itemRect = item.getBoundingClientRect()
+            // Item is visible if it's within the viewport (with 50px buffer at bottom)
+            return itemRect.top < viewportHeight && itemRect.bottom > -50
+          })
+          
+          if (allItemsVisible) {
+            triggerFadeIn()
+            // Remove listener once triggered
+            if (checkFooterVisibilityHandler) {
+              window.removeEventListener('scroll', checkFooterVisibilityHandler)
+            }
+          }
+        } else {
+          // No menu items, trigger immediately
+          triggerFadeIn()
+          // Remove listener once triggered
+          if (checkFooterVisibilityHandler) {
+            window.removeEventListener('scroll', checkFooterVisibilityHandler)
+          }
         }
       }
     }

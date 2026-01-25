@@ -36,8 +36,10 @@
 import { watch } from 'vue'
 import { useRuntimeConfig } from '#app'
 import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { usePageSettings } from '~/composables/usePageSettings'
 import { useSiteSettings } from '~/composables/useSiteSettings'
+import { useSanityImage } from '~/composables/useSanityImage'
 import PageHero from '~/components/PageHero.vue'
 
 const config = useRuntimeConfig()
@@ -46,26 +48,83 @@ const config = useRuntimeConfig()
 const { page: pageData, error, pending } = usePageSettings()
 
 // Get site settings once
-const { title: websiteTitle, defaultHeroVideo, defaultHeroImage } = useSiteSettings()
+const { 
+  title: websiteTitle, 
+  defaultHeroVideo, 
+  defaultHeroImage,
+  defaultMetaDescription,
+  defaultOgImage
+} = useSiteSettings()
 
+// Get image URL helper
+const { getImageUrl } = useSanityImage()
 
-// Watch for changes in pageData to update title
-watch(() => pageData.value, (newData) => {
-  if (newData) {
-    const pageTitle = newData.title || 'Home'
-    const fullTitle = `${websiteTitle.value} | ${pageTitle}`
-    useHead({
-      title: fullTitle
-    })
+// Get current URL for og:url
+const config = useRuntimeConfig()
+const route = useRoute()
+const getCurrentUrl = () => {
+  if (typeof window !== 'undefined') {
+    return window.location.href
   }
-}, { immediate: true })
+  // Fallback for SSR
+  const baseUrl = config.public.siteUrl || 'https://www.drmagdalena.co.uk'
+  return baseUrl
+}
 
 // Page meta
 useHead(() => {
   const title = pageData.value?.title || 'Home';
-  return { 
-    title: `${websiteTitle.value} | ${title}`
+  const metaTitle = pageData.value?.seo?.metaTitle || title;
+  const metaDescription = pageData.value?.seo?.metaDescription || defaultMetaDescription.value;
+  
+  // Get OG image - prefer page-specific, fallback to default
+  const ogImageSource = pageData.value?.seo?.ogImage || defaultOgImage.value;
+  const ogImageUrl = ogImageSource ? getImageUrl(ogImageSource) : null;
+  
+  const headConfig = { 
+    title: `${websiteTitle.value} | ${metaTitle}`,
+    meta: []
   };
+
+  // Meta description
+  if (metaDescription) {
+    headConfig.meta.push({
+      name: 'description',
+      content: metaDescription
+    });
+  }
+
+  // Open Graph tags
+  headConfig.meta.push(
+    {
+      property: 'og:title',
+      content: `${websiteTitle.value} | ${metaTitle}`
+    },
+    {
+      property: 'og:type',
+      content: 'website'
+    },
+    {
+      property: 'og:url',
+      content: getCurrentUrl()
+    }
+  );
+
+  if (metaDescription) {
+    headConfig.meta.push({
+      property: 'og:description',
+      content: metaDescription
+    });
+  }
+
+  if (ogImageUrl) {
+    headConfig.meta.push({
+      property: 'og:image',
+      content: ogImageUrl
+    });
+  }
+
+  return headConfig;
 })
 
 // Computed property for development mode

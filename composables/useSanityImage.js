@@ -13,15 +13,20 @@ export const useSanityImage = () => {
     if (!source?.asset) {
       return null
     }
+    let url = null
     if (source.asset.url) {
-      return source.asset.url
-    }
-    if (source.asset._ref) {
+      url = source.asset.url
+    } else if (source.asset._ref) {
       const [_file, id, extension] = source.asset._ref.split('-')
-      const url = `https://cdn.sanity.io/images/0hcfi5z2/production/${id}.${extension}`
-      return url
+      url = `https://cdn.sanity.io/images/0hcfi5z2/production/${id}.${extension}`
     }
-    return null
+    
+    // Ensure URL is absolute for Open Graph
+    if (url && !url.startsWith('http://') && !url.startsWith('https://')) {
+      url = `https://cdn.sanity.io${url}`
+    }
+    
+    return url
   }
 
   return {
