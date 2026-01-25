@@ -28,7 +28,12 @@
                     <NuxtImg
                         :src="section.blocksContent.image.asset.url"
                         :alt="section.blocksContent.image.alt || 'Section image'"
-                        style="width: 33.333%; margin: 0 auto; display: block;"
+                        style="width: 33.333%; margin: 0 auto; display: block;height:auto;"
+                        :width="400"
+                        :height="600"
+                        sizes="(max-width: 999px) 100vw, 33vw"
+                        loading="lazy"
+                        format="webp"
                     />
                     </div>
                 </div>

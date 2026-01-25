@@ -18,41 +18,41 @@
 
   <!-- Page transitions (wrap page content only, header is outside) -->
   <template v-if="!disablePageTransition">
-    <Transition
-      name="page"
-      mode="out-in"
-      appear
+  <Transition
+    name="page"
+    mode="out-in"
+    appear
       @before-leave="onPageBeforeLeave"
       @after-leave="onPageAfterLeave"
-      @before-enter="onPageBeforeEnter"
-      @after-enter="onPageEnter"
-    >
-      <div v-if="preloaderReady" class="app-shell" :key="route.fullPath">
-        <VisibleGrid />
+    @before-enter="onPageBeforeEnter"
+    @after-enter="onPageEnter"
+  >
+    <div v-if="preloaderReady" class="app-shell" :key="route.fullPath">
+      <VisibleGrid />
 
-        <div class="page-container">
-          <Suspense>
-            <main 
-              :style="mainStyle"
-            >
-              <NuxtPage />
-            </main>
-          </Suspense>
-          <ClientOnly>
-            <template #default>
-              <Footer
-                v-if="!page?.value?.hideFooter"
-                :page-data="page"
-                :key="route.path"
-              />
-            </template>
-            <template #fallback>
-              <!-- No footer during SSR -->
-            </template>
-          </ClientOnly>
-        </div>
+      <div class="page-container">
+        <Suspense>
+          <main 
+            :style="mainStyle"
+          >
+            <NuxtPage />
+          </main>
+        </Suspense>
+        <ClientOnly>
+          <template #default>
+            <Footer
+              v-if="!page?.value?.hideFooter"
+              :page-data="page"
+              :key="route.path"
+            />
+          </template>
+          <template #fallback>
+            <!-- No footer during SSR -->
+          </template>
+        </ClientOnly>
       </div>
-    </Transition>
+    </div>
+  </Transition>
   </template>
 
   <!-- No page transitions: render instantly with no animation -->
@@ -386,43 +386,43 @@ const onPageEnter = async () => {
       showPageOverlay.value = false
       
       // Show footer again after overlay starts fading out
-      isPageTransitioning.value = false
-      
-      // Remove page-transitioning class to re-enable footer scroll trigger
-      if (typeof document !== 'undefined') {
-        document.body.classList.remove('page-transitioning')
+  isPageTransitioning.value = false
+  
+  // Remove page-transitioning class to re-enable footer scroll trigger
+  if (typeof document !== 'undefined') {
+    document.body.classList.remove('page-transitioning')
         // Remove preserved hero-in-view flag
         document.body.removeAttribute('data-preserve-hero-view')
-        
-        // Also ensure footer is visible after a brief delay to let CSS apply
-        requestAnimationFrame(() => {
-          const footer = document.querySelector('footer')
-          if (footer) {
-            footer.style.opacity = '1'
-          }
-        })
+    
+    // Also ensure footer is visible after a brief delay to let CSS apply
+    requestAnimationFrame(() => {
+      const footer = document.querySelector('footer')
+      if (footer) {
+        footer.style.opacity = '1'
       }
-      
+    })
+  }
+  
       // On client-side navigation, wait for fade-in to complete before re-enabling animations
       // This ensures the 1800ms fade-in transition isn't interrupted
-      if (isInitialLoad.value === false && typeof document !== 'undefined') {
-        setTimeout(() => {
+  if (isInitialLoad.value === false && typeof document !== 'undefined') {
+      setTimeout(() => {
           document.body.classList.add('preloader-ready')
         }, 1800) // Wait for fade-in transition to complete
-      }
-      
-      if (typeof window !== 'undefined' && window.gsap && window.gsap.ScrollTrigger) {
-        window.gsap.ScrollTrigger.refresh()
-      }
-      
-      // Let fade-in system and others know page content is visible
-      // Small delay to ensure footer restoration happens first
-      setTimeout(() => {
-        document.dispatchEvent(new CustomEvent('page-transition-in-complete'))
-      }, 50)
-      
-      // Dispatch route-changed event for other plugins
-      document.dispatchEvent(new CustomEvent('route-changed'))
+  }
+  
+  if (typeof window !== 'undefined' && window.gsap && window.gsap.ScrollTrigger) {
+    window.gsap.ScrollTrigger.refresh()
+  }
+  
+  // Let fade-in system and others know page content is visible
+  // Small delay to ensure footer restoration happens first
+  setTimeout(() => {
+    document.dispatchEvent(new CustomEvent('page-transition-in-complete'))
+  }, 50)
+  
+  // Dispatch route-changed event for other plugins
+  document.dispatchEvent(new CustomEvent('route-changed'))
     } else {
       // Hero not ready yet, check again after a short delay
       setTimeout(waitForHeroAndHideOverlay, 50)

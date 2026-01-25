@@ -70,43 +70,45 @@ const getCurrentUrl = () => {
   return baseUrl
 }
 
+// Computed values for SEO
+const pageTitle = computed(() => pageData.value?.title || 'Home')
+const metaTitle = computed(() => pageData.value?.seo?.metaTitle || pageTitle.value)
+const metaDescription = computed(() => {
+  const desc = pageData.value?.seo?.metaDescription || defaultMetaDescription.value
+  return desc && desc.trim() ? desc.trim() : undefined
+})
+const ogImageSource = computed(() => pageData.value?.seo?.ogImage || defaultOgImage.value)
+const ogImageUrl = computed(() => {
+  if (!ogImageSource.value) return undefined
+  const url = getImageUrl(ogImageSource.value)
+  return url || undefined
+})
+
 // Page meta
 useHead(() => {
-  const title = pageData.value?.title || 'Home';
-  const metaTitle = pageData.value?.seo?.metaTitle || title;
-  
   return { 
-    title: `${websiteTitle.value} | ${metaTitle}`
+    title: `${websiteTitle.value} | ${metaTitle.value}`
   };
 })
 
 // SEO Meta tags using useSeoMeta for better Open Graph support
 useSeoMeta(() => {
-  const title = pageData.value?.title || 'Home';
-  const metaTitle = pageData.value?.seo?.metaTitle || title;
-  const metaDescription = pageData.value?.seo?.metaDescription || defaultMetaDescription.value;
-  
-  // Get OG image - prefer page-specific, fallback to default
-  const ogImageSource = pageData.value?.seo?.ogImage || defaultOgImage.value;
-  const ogImageUrl = ogImageSource ? getImageUrl(ogImageSource) : null;
-  
   const seoMeta = {
-    description: metaDescription || undefined,
-    ogTitle: `${websiteTitle.value} | ${metaTitle}`,
+    ogTitle: `${websiteTitle.value} | ${metaTitle.value}`,
     ogType: 'website',
-    ogUrl: getCurrentUrl(),
-    ogDescription: metaDescription || undefined,
-    ogImage: ogImageUrl || undefined
-  };
+    ogUrl: getCurrentUrl()
+  }
 
-  // Remove undefined values
-  Object.keys(seoMeta).forEach(key => {
-    if (seoMeta[key] === undefined) {
-      delete seoMeta[key];
-    }
-  });
+  if (metaDescription.value) {
+    seoMeta.description = metaDescription.value
+    seoMeta.ogDescription = metaDescription.value
+  }
 
-  return seoMeta;
+  if (ogImageUrl.value) {
+    seoMeta.ogImage = ogImageUrl.value
+  }
+
+  return seoMeta
 })
 
 // Computed property for development mode

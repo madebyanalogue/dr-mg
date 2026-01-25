@@ -80,11 +80,30 @@ export default defineNuxtConfig({
           crossorigin: 'anonymous'
         },
         {
-          rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Rethink+Sans:ital@0;1&display=swap'
+          rel: 'preconnect',
+          href: 'https://cdn.sanity.io'
+        }
+      ],
+      noscript: [
+        {
+          children: '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Rethink+Sans:ital@0;1&display=swap">'
         }
       ],
       script: [
+        {
+          children: `
+            // Load Google Fonts asynchronously to prevent render blocking
+            (function() {
+              const link = document.createElement('link');
+              link.rel = 'stylesheet';
+              link.href = 'https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Rethink+Sans:ital@0;1&display=swap';
+              link.media = 'print';
+              link.onload = function() { this.media = 'all'; };
+              document.head.appendChild(link);
+            })();
+          `,
+          type: 'text/javascript'
+        },
         {
           src: 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/CustomEase.min.js',
           defer: true

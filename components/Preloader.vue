@@ -99,28 +99,40 @@ const logotypeSvgContent = ref(null)
 // Check if logotype is SVG and fetch its content
 const fetchLogotypeSvg = async () => {
   const logotype = siteSettings.value?.logotype
-  if (!logotype?.asset?.url) return
+  if (!logotype?.asset) return
   
+  // Check if it's an SVG by checking asset properties first
+  const mimeType = logotype.asset.mimeType || logotype.asset._type
+  const extension = logotype.asset.extension
+  const isSvg = 
+    (mimeType && typeof mimeType === 'string' && mimeType.toLowerCase().includes('svg')) ||
+    (extension && typeof extension === 'string' && extension.toLowerCase() === 'svg')
+  
+  if (!isSvg) {
+    logotypeSvgContent.value = null
+    return
+  }
+  
+  // Get the original URL (getImageUrl will skip proxy for SVGs)
   const url = getImageUrl(logotype)
-  const isSvg = url.toLowerCase().includes('.svg') || logotype.asset.extension === 'svg'
+  if (!url) {
+    logotypeSvgContent.value = null
+    return
+  }
   
-  if (isSvg) {
-    try {
-      // Use the proxy endpoint to avoid CORS issues
-      const proxyUrl = `/api/proxy-svg?url=${encodeURIComponent(url)}`
-      const response = await fetch(proxyUrl)
-      if (response.ok) {
-        const svgText = await response.text()
-        logotypeSvgContent.value = svgText
-      } else {
-        console.warn('Failed to fetch SVG content via proxy:', response.status)
-        logotypeSvgContent.value = null
-      }
-    } catch (error) {
-      console.warn('Failed to fetch SVG content:', error)
+  try {
+    // Use the proxy endpoint to avoid CORS issues
+    const proxyUrl = `/api/proxy-svg?url=${encodeURIComponent(url)}`
+    const response = await fetch(proxyUrl)
+    if (response.ok) {
+      const svgText = await response.text()
+      logotypeSvgContent.value = svgText
+    } else {
+      console.warn('Failed to fetch SVG content via proxy:', response.status)
       logotypeSvgContent.value = null
     }
-  } else {
+  } catch (error) {
+    console.warn('Failed to fetch SVG content:', error)
     logotypeSvgContent.value = null
   }
 }

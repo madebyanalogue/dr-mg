@@ -136,6 +136,12 @@ const videoUrl = computed(() => {
     url = `https://cdn.sanity.io${url}`
   }
   
+  // Route through proxy to prevent third-party cookies
+  if (url && url.includes('cdn.sanity.io')) {
+    const encodedUrl = encodeURIComponent(url)
+    return `/api/proxy-video?url=${encodedUrl}`
+  }
+  
   return url
 })
 

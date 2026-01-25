@@ -46,9 +46,14 @@
               >
                 <NuxtImg
                   :src="leftSlot.image.asset.url"
-                    :alt="leftSlot.imageAlt || 'Left column image'"
+                  :alt="leftSlot.imageAlt || 'Left column image'"
                   style="width: 100%; height: auto;"
                   class="lazyload-image"
+                  :width="640"
+                  :height="960"
+                  sizes="(max-width: 999px) 100vw, 50vw"
+                  loading="lazy"
+                  format="webp"
                 />
                 <div class="lazyload-cover"></div>
                 </div>
@@ -91,9 +96,14 @@
               >
                 <NuxtImg
                   :src="rightSlot.image.asset.url"
-                    :alt="rightSlot.imageAlt || 'Right column image'"
+                  :alt="rightSlot.imageAlt || 'Right column image'"
                   style="width: 100%; height: auto;"
                   class="lazyload-image"
+                  :width="640"
+                  :height="960"
+                  sizes="(max-width: 999px) 100vw, 50vw"
+                  loading="lazy"
+                  format="webp"
                 />
                 <div class="lazyload-cover"></div>
                 </div>
