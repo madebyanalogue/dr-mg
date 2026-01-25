@@ -94,12 +94,13 @@ import { computed, onMounted, watch, ref, reactive, nextTick } from 'vue';
 import { useRoute } from 'vue-router'
 import { useHead, useRouter } from '#app'
 import { useSiteSettings } from '~/composables/useSiteSettings'
+import { useSanityImage } from '~/composables/useSanityImage'
 
 // Initialize page settings first
 const { isDark, page, pending: pagePending } = usePageSettings();
 const route = useRoute();
 const router = useRouter();
-const { disablePreloader, disablePageTransition, defaultHeroVideo, defaultHeroImage } = useSiteSettings()
+const { disablePreloader, disablePageTransition, defaultHeroVideo, defaultHeroImage, defaultMetaDescription, defaultOgImage, title: websiteTitle } = useSiteSettings()
 
 
 // Initialize scroll trigger system
@@ -233,6 +234,73 @@ const mainStyle = computed(() => {
 
 // Set static favicon
 useFavicon();
+
+// Set default SEO meta tags (pages can override these)
+const { getImageUrl } = useSanityImage()
+const defaultOgImageUrl = computed(() => {
+  if (defaultOgImage.value?.asset) {
+    return getImageUrl(defaultOgImage.value, { width: 1200, quality: 85 })
+  }
+  return null
+})
+
+useHead(() => {
+  const meta = []
+  
+  // Default title (will be overridden by pages)
+  const defaultTitle = websiteTitle.value || 'Dr Magdelena Goryczko'
+  
+  // Default meta description
+  if (defaultMetaDescription.value) {
+    meta.push({
+      name: 'description',
+      content: defaultMetaDescription.value
+    })
+  }
+  
+  // Default OG image
+  if (defaultOgImageUrl.value) {
+    meta.push(
+      {
+        property: 'og:image',
+        content: defaultOgImageUrl.value
+      },
+      {
+        property: 'og:image:width',
+        content: '1200'
+      },
+      {
+        property: 'og:image:height',
+        content: '630'
+      }
+    )
+  }
+  
+  // OG type, site name
+  meta.push(
+    {
+      property: 'og:type',
+      content: 'website'
+    },
+    {
+      property: 'og:site_name',
+      content: defaultTitle
+    }
+  )
+  
+  // Default OG title (will be overridden by pages)
+  if (websiteTitle.value) {
+    meta.push({
+      property: 'og:title',
+      content: defaultTitle
+    })
+  }
+  
+  return { 
+    title: defaultTitle,
+    meta 
+  }
+})
 
 // Add script to head to prevent flash of incorrect mode
 useHead({

@@ -66,75 +66,64 @@ const {
 // Get image URL helper
 const { getImageUrl } = useSanityImage()
 
-// Computed SEO values for reactivity
-const seoTitle = computed(() => {
+// Page meta - use page-specific SEO data if available, otherwise use defaults
+useHead(() => {
   const pageTitle = pageData.value?.seo?.metaTitle || pageData.value?.title || 'Page Not Found'
-  return pageData.value?.seo?.metaTitle 
+  const fullTitle = pageData.value?.seo?.metaTitle 
     ? `${websiteTitle.value} | ${pageData.value.seo.metaTitle}`
     : `${websiteTitle.value} | ${pageData.value?.title || 'Page Not Found'}`
-})
-
-const seoDescription = computed(() => {
-  return pageData.value?.seo?.metaDescription || defaultMetaDescription.value || ''
-})
-
-const seoImage = computed(() => {
+  
+  const metaDescription = pageData.value?.seo?.metaDescription || defaultMetaDescription.value || ''
+  
+  // Get OG image - use page-specific if available, then default
+  let ogImageUrl = null
   if (pageData.value?.seo?.ogImage?.asset) {
-    return getImageUrl(pageData.value.seo.ogImage, { width: 1200, quality: 85 })
+    ogImageUrl = getImageUrl(pageData.value.seo.ogImage, { width: 1200, quality: 85 })
   } else if (defaultOgImage.value?.asset) {
-    return getImageUrl(defaultOgImage.value, { width: 1200, quality: 85 })
+    ogImageUrl = getImageUrl(defaultOgImage.value, { width: 1200, quality: 85 })
   }
-  return null
-})
-
-const seoUrl = computed(() => {
-  return typeof window !== 'undefined' ? window.location.href : ''
-})
-
-// Page meta - use computed values for SSR
-useHead({
-  title: seoTitle,
-  meta: computed(() => {
-    const meta = []
-    
-    if (seoDescription.value) {
-      meta.push({
-        name: 'description',
-        content: seoDescription.value
-      })
-    }
-    
+  
+  const meta = []
+  
+  if (metaDescription) {
     meta.push({
-      property: 'og:title',
-      content: seoTitle.value
+      name: 'description',
+      content: metaDescription
     })
-    
-    if (seoUrl.value) {
-      meta.push({
-        property: 'og:url',
-        content: seoUrl.value
-      })
+  }
+  
+  if (ogImageUrl) {
+    meta.push(
+      {
+        property: 'og:image',
+        content: ogImageUrl
+      },
+      {
+        property: 'og:image:width',
+        content: '1200'
+      },
+      {
+        property: 'og:image:height',
+        content: '630'
+      }
+    )
+  }
+  
+  meta.push(
+    {
+      property: 'og:title',
+      content: fullTitle
+    },
+    {
+      property: 'og:url',
+      content: typeof window !== 'undefined' ? window.location.href : ''
     }
-    
-    if (seoImage.value) {
-      meta.push(
-        {
-          property: 'og:image',
-          content: seoImage.value
-        },
-        {
-          property: 'og:image:width',
-          content: '1200'
-        },
-        {
-          property: 'og:image:height',
-          content: '630'
-        }
-      )
-    }
-    
-    return meta
-  })
+  )
+  
+  return {
+    title: fullTitle,
+    meta
+  }
 })
 
 // Computed property for development mode
