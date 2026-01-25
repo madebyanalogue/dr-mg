@@ -33,9 +33,8 @@
 </template>
 
 <script setup>
-import { useRuntimeConfig } from '#app'
+import { useRuntimeConfig, useHead } from '#app'
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
 import { usePageSettings } from '~/composables/usePageSettings'
 import { useSiteSettings } from '~/composables/useSiteSettings'
 import { useSanityImage } from '~/composables/useSanityImage'

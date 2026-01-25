@@ -36,10 +36,10 @@
 </template> 
 
 <script setup>
-import { usePageSettings } from '~/composables/usePageSettings'
-import { useRuntimeConfig } from '#app'
+import { useRuntimeConfig, useHead } from '#app'
 import { computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { usePageSettings } from '~/composables/usePageSettings'
 import { useSiteSettings } from '~/composables/useSiteSettings'
 import { useSanityImage } from '~/composables/useSanityImage'
 import NotFound404 from '~/components/NotFound404.vue'

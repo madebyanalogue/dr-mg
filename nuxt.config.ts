@@ -13,7 +13,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || '',
-      useLocalHeroVideos: process.env.USE_LOCAL_HERO_VIDEOS === 'true' || false
+      useLocalHeroVideos: process.env.USE_LOCAL_HERO_VIDEOS === 'true' || false,
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://www.drmagdalena.co.uk'
     }
   },
 
