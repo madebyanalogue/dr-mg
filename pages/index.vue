@@ -60,7 +60,6 @@ const {
 const { getImageUrl } = useSanityImage()
 
 // Get current URL for og:url
-const config = useRuntimeConfig()
 const route = useRoute()
 const getCurrentUrl = () => {
   if (typeof window !== 'undefined') {
