@@ -334,11 +334,11 @@ const closeNav = (callback = null) => {
       "<"
     )
   }
-  .to(overlay.value, { autoAlpha: 0 }, "<")
-  .to(backdrop.value, 
-    { y: "-100%", duration: 0.3, ease: "power2.in" }, 
-    "<"
-  )
+  tl.to(overlay.value, { autoAlpha: 0 }, "<")
+    .to(backdrop.value, 
+      { y: "-100%", duration: 0.3, ease: "power2.in" }, 
+      "<"
+    )
 }
 
 // Wrapper function for closing nav with callback

@@ -343,6 +343,13 @@ body.page-transitioning .page-overlay:not(.page-overlay--visible) {
   animation: none !important;
 }
 
+/* Exception: Allow fade-in elements to transition even when preloader-ready is removed */
+/* This ensures fade-in animations work during page navigation */
+body:not(.preloader-ready) [data-fade-in],
+body.page-transitioning [data-fade-in] {
+  transition: opacity var(--fade-duration) ease !important;
+}
+
 /* Navigation animations work immediately */
 /* .navigation *,
 .hamburger-nav *,

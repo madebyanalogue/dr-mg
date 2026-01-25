@@ -165,6 +165,8 @@ router.beforeEach(() => {
       if (overlay) {
         overlay.classList.add('page-overlay--visible')
       }
+      // Dispatch event to reset fade-in elements
+      document.dispatchEvent(new CustomEvent('page-transition-start'))
     }
     // Also set the reactive value for Vue
     showPageOverlay.value = true
