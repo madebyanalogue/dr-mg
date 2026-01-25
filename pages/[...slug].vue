@@ -107,66 +107,23 @@ const ogImageHeight = computed(() => {
 })
 
 // Page meta with all SEO tags - reactive to data changes
-useHead(() => {
-  const head = {
-    title: fullTitle.value,
-    meta: [
-      {
-        property: 'og:title',
-        content: fullTitle.value
-      },
-      {
-        property: 'og:type',
-        content: 'website'
-      },
-      {
-        property: 'og:url',
-        content: currentUrl.value
-      },
-      {
-        property: 'og:site_name',
-        content: websiteTitle.value
-      }
-    ]
-  }
+// Use useSeoMeta for better Open Graph support
+useSeoMeta({
+  title: fullTitle,
+  description: metaDescription,
+  ogTitle: fullTitle,
+  ogDescription: metaDescription,
+  ogType: 'website',
+  ogUrl: currentUrl,
+  ogSiteName: websiteTitle,
+  ogImage: ogImageUrl,
+  ogImageWidth: ogImageWidth,
+  ogImageHeight: ogImageHeight
+})
 
-  // Only add description if it exists
-  if (metaDescription.value) {
-    head.meta.push(
-      {
-        name: 'description',
-        content: metaDescription.value
-      },
-      {
-        property: 'og:description',
-        content: metaDescription.value
-      }
-    )
-  }
-
-  // Only add og:image if it exists
-  if (ogImageUrl.value) {
-    head.meta.push({
-      property: 'og:image',
-      content: ogImageUrl.value
-    })
-
-    // Add image dimensions if available (recommended by Facebook)
-    if (ogImageWidth.value) {
-      head.meta.push({
-        property: 'og:image:width',
-        content: String(ogImageWidth.value)
-      })
-    }
-    if (ogImageHeight.value) {
-      head.meta.push({
-        property: 'og:image:height',
-        content: String(ogImageHeight.value)
-      })
-    }
-  }
-
-  return head
+// Also set title separately
+useHead({
+  title: fullTitle
 })
 
 // Computed property for development mode
