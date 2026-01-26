@@ -25,16 +25,16 @@
           {{ bookingTitle }}
         </a>
       </div>
-      <a
+      <NuxtLink
         v-if="!pageData?.hideHeaderLogo"
-        href="/"
+        to="/"
         class="logo-center"
-        @click.prevent="handleLogoClick"
+        @click="handleLogoClick"
       >
         <div id="logo">
           <Logo />
         </div>
-      </a>
+      </NuxtLink>
       <div v-else class="logo-center">
         <div class="logo">
           <!-- Empty div to maintain layout when logo is hidden -->
@@ -92,16 +92,14 @@ const headerRef = ref(null);
 const { isHeaderVisible } = useHeaderScroll()
 const { settings: siteSettings, bookingLink, bookingTitle } = useSiteSettings()
 
-// Handle logo click - scroll to top if already on homepage, otherwise navigate
+// Handle logo click - scroll to top if already on homepage, otherwise let NuxtLink handle navigation
 const handleLogoClick = (e) => {
   if (route.path === '/') {
-    // Already on homepage, just scroll to top
+    // Already on homepage, prevent navigation and just scroll to top
     e.preventDefault();
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  } else {
-    // Navigate to homepage
-    router.push('/');
   }
+  // If not on homepage, let NuxtLink handle the navigation (client-side)
 }
 
 // Hero scroll detection

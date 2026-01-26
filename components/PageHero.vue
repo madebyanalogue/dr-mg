@@ -20,6 +20,7 @@
         playsinline
         preload="auto"
         loading="eager"
+        @canplaythrough="onVideoCanPlay"
         @loadeddata="onVideoLoaded"
         @error="onVideoError"
       />
@@ -92,6 +93,27 @@ const heroRef = ref(null)
 const videoRef = ref(null)
 const videoLoaded = ref(false)
 const contentReady = ref(false)
+let videoReadyTimeout = null
+
+// Reset state when route changes
+watch(() => route.path, () => {
+  videoLoaded.value = false
+  contentReady.value = false
+  if (videoReadyTimeout) {
+    clearTimeout(videoReadyTimeout)
+    videoReadyTimeout = null
+  }
+}, { immediate: false })
+
+// Watch video URL changes and reset state
+watch(() => videoUrl.value, () => {
+  videoLoaded.value = false
+  contentReady.value = false
+  if (videoReadyTimeout) {
+    clearTimeout(videoReadyTimeout)
+    videoReadyTimeout = null
+  }
+}, { immediate: false })
 
 // Debug: Watch props changes
 if (process.env.NODE_ENV === 'development') {
@@ -253,17 +275,40 @@ const handleScroll = () => {
   }
 }
 
-// Handle video loaded event
-const onVideoLoaded = () => {
+// Handle video can play through - this means video is ready to play smoothly
+const onVideoCanPlay = () => {
   if (videoLoaded.value) return // Already handled
+  
+  // Clear any timeout
+  if (videoReadyTimeout) {
+    clearTimeout(videoReadyTimeout)
+    videoReadyTimeout = null
+  }
+  
   videoLoaded.value = true
   if (videoRef.value) {
     videoRef.value.play().catch(error => {
-      console.warn('[PageHero] Video autoplay failed after load:', error)
+      console.warn('[PageHero] Video autoplay failed after canplay:', error)
     })
   }
-  // Set contentReady immediately - video is ready to play
+  // Set contentReady - video is ready to play smoothly
   contentReady.value = true
+}
+
+// Handle video loaded event (fallback if canplaythrough doesn't fire)
+const onVideoLoaded = () => {
+  // Only set ready if canplaythrough hasn't fired yet
+  // This is a fallback for videos that might not fire canplaythrough
+  if (!videoLoaded.value && videoRef.value) {
+    // Check if video is ready to play
+    if (videoRef.value.readyState >= 3) { // HAVE_FUTURE_DATA or higher
+      videoLoaded.value = true
+      videoRef.value.play().catch(error => {
+        console.warn('[PageHero] Video autoplay failed after load:', error)
+      })
+      contentReady.value = true
+    }
+  }
 }
 
 // Handle video errors
@@ -307,13 +352,25 @@ onMounted(async () => {
   }
   
   if (typeof window !== 'undefined' && (hasVideo.value || hasImage.value)) {
-    // For videos, start loading immediately and mark as ready right away
-    // The video will play when it's ready, but we don't need to wait
+    // For videos, start loading immediately but wait for canplaythrough before marking ready
     if (hasVideo.value && videoRef.value) {
       // Force video to start loading immediately
       videoRef.value.load()
-      // Mark as ready immediately - video will appear as soon as it loads
-      contentReady.value = true
+      // Don't mark as ready yet - wait for canplaythrough event
+      // This ensures the video is ready to play smoothly before the page transition completes
+      
+      // Set a timeout fallback (5 seconds max) in case canplaythrough never fires
+      videoReadyTimeout = setTimeout(() => {
+        if (!contentReady.value && videoRef.value) {
+          console.warn('[PageHero] Video canplaythrough timeout, marking as ready anyway')
+          videoLoaded.value = true
+          contentReady.value = true
+          videoRef.value.play().catch(error => {
+            console.warn('[PageHero] Video autoplay failed after timeout:', error)
+          })
+        }
+        videoReadyTimeout = null
+      }, 5000)
     }
     
     // Set initial hero-in-view class
@@ -387,6 +444,11 @@ onMounted(async () => {
 onUnmounted(() => {
   if (scrollHandler && typeof window !== 'undefined') {
     window.removeEventListener('scroll', scrollHandler)
+  }
+  
+  if (videoReadyTimeout) {
+    clearTimeout(videoReadyTimeout)
+    videoReadyTimeout = null
   }
   
   if (typeof document !== 'undefined') {
